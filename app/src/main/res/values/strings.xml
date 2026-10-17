@@ -99,6 +99,11 @@
     <string name="action_allow">Allow</string>
     <string name="action_open_settings">Open settings</string>
 
+    <string name="voice_start">Voice input</string>
+    <string name="voice_stop">Stop voice input</string>
+    <string name="voice_permission_denied">Microphone access is needed for voice input</string>
+    <string name="voice_error">Could not recognize speech</string>
+
     <string name="channel_doses">Medication reminders</string>
     <string name="channel_doses_desc">Time-to-take notifications</string>
     <string name="channel_stock">Refill reminders</string>

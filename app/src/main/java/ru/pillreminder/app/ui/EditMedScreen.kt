@@ -66,6 +66,7 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     var showTime by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
     val locale = currentLocale()
+    val voice = rememberVoiceController()
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -116,19 +117,19 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            OutlinedTextField(
-                value = name, onValueChange = { name = it },
+            VoiceTextField(
+                id = "name", value = name, onValueChange = { name = it }, voice = voice,
                 label = { Text(stringResource(R.string.field_name)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = dosage, onValueChange = { dosage = it },
+            VoiceTextField(
+                id = "dosage", value = dosage, onValueChange = { dosage = it }, voice = voice,
                 label = { Text(stringResource(R.string.field_dosage)) },
                 placeholder = { Text(stringResource(R.string.field_dosage_hint)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = notes, onValueChange = { notes = it },
+            VoiceTextField(
+                id = "notes", value = notes, onValueChange = { notes = it }, voice = voice,
                 label = { Text(stringResource(R.string.field_notes)) },
                 placeholder = { Text(stringResource(R.string.field_notes_hint)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -164,23 +165,26 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 }
             }
 
-            OutlinedTextField(
-                value = courseDays, onValueChange = { courseDays = it.filter(Char::isDigit).take(4) },
+            VoiceTextField(
+                id = "course", value = courseDays, voice = voice, numeric = true, maxDigits = 4,
+                onValueChange = { courseDays = it.filter(Char::isDigit).take(4) },
                 label = { Text(stringResource(R.string.field_course)) },
                 supportingText = { Text(stringResource(R.string.field_course_hint)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = stock, onValueChange = { stock = it.filter(Char::isDigit).take(5) },
+            VoiceTextField(
+                id = "stock", value = stock, voice = voice, numeric = true, maxDigits = 5,
+                onValueChange = { stock = it.filter(Char::isDigit).take(5) },
                 label = { Text(stringResource(R.string.field_stock)) },
                 supportingText = { Text(stringResource(R.string.field_stock_hint)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
             if (stock.isNotBlank()) {
-                OutlinedTextField(
-                    value = threshold, onValueChange = { threshold = it.filter(Char::isDigit).take(4) },
+                VoiceTextField(
+                    id = "threshold", value = threshold, voice = voice, numeric = true, maxDigits = 4,
+                    onValueChange = { threshold = it.filter(Char::isDigit).take(4) },
                     label = { Text(stringResource(R.string.field_threshold)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true, modifier = Modifier.fillMaxWidth(),

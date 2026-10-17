@@ -31,5 +31,10 @@ class Prefs(context: Context) {
         get() = sp.getBoolean("disclaimer", false)
         set(v) = sp.edit { putBoolean("disclaimer", v) }
 
+    /** Звуковые потоки, приглушённые на время голосового ввода (чтобы вернуть звук после сбоя). */
+    var mutedStreams: String
+        get() = sp.getString("muted_streams", "").orEmpty()
+        set(v) = sp.edit { putString("muted_streams", v) }
+
     fun reset() = sp.edit { clear() }
 }
