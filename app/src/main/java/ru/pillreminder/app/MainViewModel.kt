@@ -29,8 +29,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.IO) { Reminders.refresh(app) }
     }
 
-    fun mark(medId: Long, at: Long, status: IntakeStatus) {
-        viewModelScope.launch(Dispatchers.IO) { Intake.mark(app, medId, at, status) }
+    fun mark(medId: Long, at: Long, status: IntakeStatus, quarters: Int? = null) {
+        viewModelScope.launch(Dispatchers.IO) { Intake.mark(app, medId, at, status, quarters) }
+    }
+
+    fun changeAmount(log: IntakeLog, quarters: Int) {
+        viewModelScope.launch(Dispatchers.IO) { Intake.changeAmount(app, log, quarters) }
     }
 
     fun undo(log: IntakeLog) {

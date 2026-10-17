@@ -68,6 +68,9 @@
     <string name="journal_export">Export CSV</string>
     <string name="mark_taken">Mark as taken</string>
     <string name="mark_skipped">Mark as skipped</string>
+    <string name="mark_change_amount">Change amount</string>
+    <string name="dose_dialog_title">How many did you take?</string>
+    <string name="dose_change_action">Different amount</string>
     <string name="delete_entry">Delete entry</string>
     <string name="csv_date">Date</string>
     <string name="csv_time">Time</string>

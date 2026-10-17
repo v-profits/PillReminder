@@ -70,6 +70,9 @@
     <string name="journal_export">Экспорт в CSV</string>
     <string name="mark_taken">Отметить как принято</string>
     <string name="mark_skipped">Отметить как пропущено</string>
+    <string name="mark_change_amount">Изменить количество</string>
+    <string name="dose_dialog_title">Сколько принято?</string>
+    <string name="dose_change_action">Другое количество</string>
     <string name="delete_entry">Удалить запись</string>
     <string name="csv_date">Дата</string>
     <string name="csv_time">Время</string>

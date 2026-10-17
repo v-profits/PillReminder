@@ -140,6 +140,7 @@ fun JournalScreen(vm: MainViewModel) {
 private fun LogRow(log: IntakeLog, vm: MainViewModel) {
     val ctx = LocalContext.current
     var menu by remember { mutableStateOf(false) }
+    var showAmount by remember { mutableStateOf(false) }
     val scheme = MaterialTheme.colorScheme
     val color: Color = when (log.status) {
         IntakeStatus.TAKEN -> scheme.primary
@@ -170,10 +171,26 @@ private fun LogRow(log: IntakeLog, vm: MainViewModel) {
                 text = { Text(stringResource(R.string.mark_skipped)) },
                 onClick = { menu = false; vm.mark(log.medicationId, log.scheduledAt, IntakeStatus.SKIPPED) },
             )
+            if (log.status == IntakeStatus.TAKEN) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.mark_change_amount)) },
+                    onClick = { menu = false; showAmount = true },
+                )
+            }
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete_entry)) },
                 onClick = { menu = false; vm.undo(log) },
             )
+        }
+        if (showAmount) {
+            AmountDialog(
+                initial = log.doseQuarters,
+                confirmLabel = stringResource(R.string.ok),
+                onDismiss = { showAmount = false },
+            ) { q ->
+                showAmount = false
+                vm.changeAmount(log, q)
+            }
         }
     }
 }

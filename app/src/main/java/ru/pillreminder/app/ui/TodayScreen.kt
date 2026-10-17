@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,6 +19,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -83,7 +85,7 @@ private fun buildToday(meds: List<Medication>, logs: List<IntakeLog>, day: Local
         for (t in m.occurrencesOn(day)) {
             val key = m.id to t.toMillis()
             val log = todays[key]
-            result[key] = DoseItem(m.id, m.name, m.dosage, m.notes, t, log, log?.doseQuarters ?: m.quartersAt(t.toLocalTime()))
+            result[key] = DoseItem(m.id, m.name, m.dosage, m.notes, t, log, log?.takeIf { it.status == IntakeStatus.TAKEN }?.doseQuarters ?: m.quartersAt(t.toLocalTime()))
         }
     }
     // Записи журнала, для которых расписание уже изменилось или лекарство удалено
@@ -158,6 +160,7 @@ fun TodayScreen(vm: MainViewModel) {
 private fun DoseCard(item: DoseItem, now: LocalDateTime, vm: MainViewModel) {
     val ctx = LocalContext.current
     val state = item.state(now)
+    var showAmount by remember(item.medId, item.at) { mutableStateOf(false) }
     val scheme = MaterialTheme.colorScheme
     val container = when (state) {
         DoseState.DUE -> scheme.primaryContainer
@@ -211,8 +214,25 @@ private fun DoseCard(item: DoseItem, now: LocalDateTime, vm: MainViewModel) {
                         FilledTonalButton(onClick = { vm.mark(item.medId, item.at.toMillis(), IntakeStatus.TAKEN) }) {
                             Text(stringResource(R.string.action_taken))
                         }
+                        // Скрытая возможность принять другое количество (по умолчанию не мешает)
+                        IconButton(onClick = { showAmount = true }) {
+                            Icon(
+                                Icons.Filled.ArrowDropDown,
+                                contentDescription = stringResource(R.string.dose_change_action),
+                            )
+                        }
                         TextButton(onClick = { vm.mark(item.medId, item.at.toMillis(), IntakeStatus.SKIPPED) }) {
                             Text(stringResource(R.string.action_skip))
+                        }
+                    }
+                    if (showAmount) {
+                        AmountDialog(
+                            initial = item.quarters,
+                            confirmLabel = stringResource(R.string.action_taken),
+                            onDismiss = { showAmount = false },
+                        ) { q ->
+                            showAmount = false
+                            vm.mark(item.medId, item.at.toMillis(), IntakeStatus.TAKEN, q)
                         }
                     }
                 }

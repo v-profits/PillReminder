@@ -90,6 +90,7 @@ object Reminders {
                     scheduledAt = d.millis,
                     actedAt = null,
                     status = IntakeStatus.MISSED,
+                    doseQuarters = d.quarters,
                 ),
             )
             Notifier.cancelDose(ctx, d.med.id, d.millis)
