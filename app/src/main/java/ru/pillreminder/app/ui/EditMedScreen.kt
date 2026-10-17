@@ -1,5 +1,6 @@
 package ru.pillreminder.app.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -76,9 +77,18 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     var loaded by rememberSaveable { mutableStateOf(id == 0L) }
     var showTime by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    var showDiscard by remember { mutableStateOf(false) }
     val locale = currentLocale()
     val voice = rememberVoiceController()
     val ctx = LocalContext.current
+
+    // Снимок полей: по нему определяем, есть ли несохранённые изменения
+    fun snapshot() = listOf(name, dosage, notes, timesCsv, daysMask, courseDays, stock, threshold).joinToString("\u0001")
+    var initialSnapshot by rememberSaveable {
+        mutableStateOf(if (id == 0L) listOf("", "", "", "08:00=4", Medication.ALL_DAYS, "", "", "5").joinToString("\u0001") else "")
+    }
+    val dirty = loaded && snapshot() != initialSnapshot
+    BackHandler(enabled = dirty) { showDiscard = true }
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -94,6 +104,7 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 stock = m.stock?.let(::quartersToInput).orEmpty()
                 threshold = m.refillThreshold.toString()
             }
+            if (!loaded) initialSnapshot = snapshot()
             loaded = true
         }
     }
@@ -106,7 +117,7 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(if (id == 0L) R.string.med_add else R.string.med_edit)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
+                    IconButton(onClick = { if (dirty) showDiscard = true else onClose() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
@@ -271,6 +282,21 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
             },
             dismissButton = { TextButton(onClick = { showTime = false }) { Text(stringResource(R.string.cancel)) } },
             text = { TimePicker(state = state) },
+        )
+    }
+
+    if (showDiscard) {
+        AlertDialog(
+            onDismissRequest = { showDiscard = false },
+            title = { Text(stringResource(R.string.discard_title)) },
+            text = { Text(stringResource(R.string.discard_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDiscard = false
+                    onClose()
+                }) { Text(stringResource(R.string.discard_confirm)) }
+            },
+            dismissButton = { TextButton(onClick = { showDiscard = false }) { Text(stringResource(R.string.discard_keep)) } },
         )
     }
 

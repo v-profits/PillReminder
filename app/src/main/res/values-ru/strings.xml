@@ -34,6 +34,10 @@
     <string name="meds_empty_hint">Нажмите «+», чтобы добавить первое.</string>
     <string name="med_add">Добавить лекарство</string>
     <string name="med_edit">Изменить лекарство</string>
+    <string name="discard_title">Выйти без сохранения?</string>
+    <string name="discard_text">Внесённые изменения не будут сохранены.</string>
+    <string name="discard_confirm">Выйти</string>
+    <string name="discard_keep">Остаться</string>
     <string name="med_delete_title">Удалить лекарство?</string>
     <string name="med_delete_text">Расписание будет удалено. Прошлые записи останутся в журнале.</string>
     <string name="every_day">Каждый день</string>

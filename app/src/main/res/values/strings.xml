@@ -34,6 +34,10 @@
     <string name="meds_empty_hint">Tap + to add the first one.</string>
     <string name="med_add">Add medication</string>
     <string name="med_edit">Edit medication</string>
+    <string name="discard_title">Leave without saving?</string>
+    <string name="discard_text">Your changes will not be saved.</string>
+    <string name="discard_confirm">Leave</string>
+    <string name="discard_keep">Stay</string>
     <string name="med_delete_title">Delete medication?</string>
     <string name="med_delete_text">The schedule will be removed. Past entries stay in the journal.</string>
     <string name="every_day">Every day</string>
