@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Напоминание о таблетках</string>
+
+    <string name="tab_today">Сегодня</string>
+    <string name="tab_meds">Лекарства</string>
+    <string name="tab_journal">Журнал</string>
+    <string name="tab_settings">Настройки</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="save">Сохранить</string>
+    <string name="back">Назад</string>
+
+    <string name="disclaimer_title">Важно</string>
+    <string name="disclaimer_text">Приложение только напоминает о приёме лекарств, которые вы добавили сами. Оно не даёт медицинских советов, дозировок и рекомендаций и не заменяет врача. Следуйте назначениям вашего врача. Все данные хранятся только на этом телефоне.</string>
+    <string name="disclaimer_ok">Понятно</string>
+
+    <string name="today_empty">На сегодня приёмов нет</string>
+    <string name="today_empty_hint">Добавьте лекарство на вкладке «Лекарства» и укажите время.</string>
+    <string name="today_progress">Принято сегодня: %1$d из %2$d</string>
+    <string name="action_taken">Принял</string>
+    <string name="action_skip">Пропустить</string>
+    <string name="action_undo">Отменить</string>
+    <string name="action_snooze_short">Отложить</string>
+    <string name="status_taken">Принято</string>
+    <string name="status_taken_at">Принято в %s</string>
+    <string name="status_skipped">Пропущено</string>
+    <string name="status_missed">Не отмечено</string>
+    <string name="status_due">Пора принять</string>
+
+    <string name="meds_empty">Лекарств пока нет</string>
+    <string name="meds_empty_hint">Нажмите «+», чтобы добавить первое.</string>
+    <string name="med_add">Добавить лекарство</string>
+    <string name="med_edit">Изменить лекарство</string>
+    <string name="med_delete_title">Удалить лекарство?</string>
+    <string name="med_delete_text">Расписание будет удалено. Прошлые записи останутся в журнале.</string>
+    <string name="every_day">Каждый день</string>
+    <string name="stock_left">Осталось: %d</string>
+
+    <string name="field_name">Название</string>
+    <string name="field_dosage">Дозировка</string>
+    <string name="field_dosage_hint">например, 1 таблетка</string>
+    <string name="field_notes">Ваша заметка</string>
+    <string name="field_notes_hint">например, во время завтрака</string>
+    <string name="field_times">Время приёма (нажмите, чтобы убрать)</string>
+    <string name="time_add">Добавить время</string>
+    <string name="field_days">Дни недели</string>
+    <string name="field_course">Длительность курса, дней</string>
+    <string name="field_course_hint">Оставьте пустым, если срока нет</string>
+    <string name="field_stock">Осталось таблеток</string>
+    <string name="field_stock_hint">Необязательно. Уменьшается при нажатии «Принял»</string>
+    <string name="field_threshold">Напомнить о покупке, когда останется</string>
+
+    <string name="period_7">7 дней</string>
+    <string name="period_30">30 дней</string>
+    <string name="period_all">Всё время</string>
+    <string name="stats_adherence">Соблюдение расписания: %d%%</string>
+    <string name="stats_counts">Принято %1$d · пропущено %2$d · не отмечено %3$d</string>
+    <string name="journal_empty">Записей пока нет</string>
+    <string name="journal_export">Экспорт в CSV</string>
+    <string name="mark_taken">Отметить как принято</string>
+    <string name="mark_skipped">Отметить как пропущено</string>
+    <string name="delete_entry">Удалить запись</string>
+    <string name="csv_date">Дата</string>
+    <string name="csv_time">Время</string>
+    <string name="csv_medication">Лекарство</string>
+    <string name="csv_dosage">Дозировка</string>
+    <string name="csv_status">Статус</string>
+    <string name="csv_recorded">Отмечено</string>
+
+    <string name="settings_theme">Тема</string>
+    <string name="theme_system">Системная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="settings_language">Язык</string>
+    <string name="lang_system">Системный</string>
+    <string name="lang_ru">Русский</string>
+    <string name="lang_en">English</string>
+    <string name="settings_notifications">Уведомления</string>
+    <string name="settings_hide_lock">Скрывать названия на экране блокировки</string>
+    <string name="settings_hide_lock_hint">В уведомлении будет только сообщение, что пора принять лекарство</string>
+    <string name="settings_snooze">Отложить на</string>
+    <string name="minutes_short">%d мин</string>
+    <string name="settings_test_notification">Проверить уведомление</string>
+    <string name="settings_battery">Настройки батареи</string>
+    <string name="settings_battery_hint">Если напоминания приходят с опозданием, разрешите приложению работать в фоне и отключите для него оптимизацию батареи.</string>
+    <string name="settings_data">Данные</string>
+    <string name="settings_data_hint">Всё хранится только на этом телефоне. У приложения нет доступа в интернет и облачных копий.</string>
+    <string name="settings_clear_journal">Очистить журнал</string>
+    <string name="settings_clear_journal_text">Все записи журнала будут удалены. Это нельзя отменить.</string>
+    <string name="settings_delete_all">Удалить все данные</string>
+    <string name="settings_delete_all_text">Все лекарства и журнал будут удалены. Это нельзя отменить.</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_version">Версия %s</string>
+    <string name="warn_notifications">Уведомления выключены, поэтому напоминания не появятся.</string>
+    <string name="warn_exact_alarm">Точные будильники запрещены, напоминания могут приходить с опозданием.</string>
+    <string name="action_allow">Разрешить</string>
+    <string name="action_open_settings">Открыть настройки</string>
+
+    <string name="channel_doses">Напоминания о приёме</string>
+    <string name="channel_doses_desc">Уведомления о времени приёма</string>
+    <string name="channel_stock">Напоминания о покупке</string>
+    <string name="channel_stock_desc">Таблетки заканчиваются</string>
+    <string name="notif_public_title">Пора принять лекарство</string>
+    <string name="notif_low_stock_title">Лекарство заканчивается</string>
+    <string name="notif_low_stock_text">%1$s: осталось %2$d. Пора пополнить запас.</string>
+    <string name="notif_test_title">Проверка уведомления</string>
+    <string name="notif_test_text">Напоминания работают.</string>
+</resources>

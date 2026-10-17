@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pill Reminder</string>
+
+    <string name="tab_today">Today</string>
+    <string name="tab_meds">Medications</string>
+    <string name="tab_journal">Journal</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+
+    <string name="disclaimer_title">Please note</string>
+    <string name="disclaimer_text">This app only reminds you to take medications that you add yourself. It does not give medical advice, doses or recommendations, and does not replace a doctor. Follow your doctor\'s instructions. All data is stored only on this phone.</string>
+    <string name="disclaimer_ok">Got it</string>
+
+    <string name="today_empty">Nothing scheduled for today</string>
+    <string name="today_empty_hint">Add a medication on the \"Medications\" tab and set the time.</string>
+    <string name="today_progress">Taken today: %1$d of %2$d</string>
+    <string name="action_taken">Taken</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_snooze_short">Snooze</string>
+    <string name="status_taken">Taken</string>
+    <string name="status_taken_at">Taken at %s</string>
+    <string name="status_skipped">Skipped</string>
+    <string name="status_missed">Missed</string>
+    <string name="status_due">Time to take it</string>
+
+    <string name="meds_empty">No medications yet</string>
+    <string name="meds_empty_hint">Tap + to add the first one.</string>
+    <string name="med_add">Add medication</string>
+    <string name="med_edit">Edit medication</string>
+    <string name="med_delete_title">Delete medication?</string>
+    <string name="med_delete_text">The schedule will be removed. Past entries stay in the journal.</string>
+    <string name="every_day">Every day</string>
+    <string name="stock_left">Left: %d</string>
+
+    <string name="field_name">Name</string>
+    <string name="field_dosage">Dosage</string>
+    <string name="field_dosage_hint">e.g. 1 tablet</string>
+    <string name="field_notes">Your note</string>
+    <string name="field_notes_hint">e.g. with breakfast</string>
+    <string name="field_times">Times (tap to remove)</string>
+    <string name="time_add">Add time</string>
+    <string name="field_days">Days of the week</string>
+    <string name="field_course">Course length, days</string>
+    <string name="field_course_hint">Leave empty for no end date</string>
+    <string name="field_stock">Pills left</string>
+    <string name="field_stock_hint">Optional. Decreases when you tap \"Taken\"</string>
+    <string name="field_threshold">Remind to refill when this many are left</string>
+
+    <string name="period_7">7 days</string>
+    <string name="period_30">30 days</string>
+    <string name="period_all">All time</string>
+    <string name="stats_adherence">Adherence: %d%%</string>
+    <string name="stats_counts">Taken %1$d · skipped %2$d · missed %3$d</string>
+    <string name="journal_empty">No entries yet</string>
+    <string name="journal_export">Export CSV</string>
+    <string name="mark_taken">Mark as taken</string>
+    <string name="mark_skipped">Mark as skipped</string>
+    <string name="delete_entry">Delete entry</string>
+    <string name="csv_date">Date</string>
+    <string name="csv_time">Time</string>
+    <string name="csv_medication">Medication</string>
+    <string name="csv_dosage">Dosage</string>
+    <string name="csv_status">Status</string>
+    <string name="csv_recorded">Recorded at</string>
+
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="lang_system">System</string>
+    <string name="lang_ru">Русский</string>
+    <string name="lang_en">English</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_hide_lock">Hide names on lock screen</string>
+    <string name="settings_hide_lock_hint">The notification will only say it\'s time to take a medication</string>
+    <string name="settings_snooze">Snooze for</string>
+    <string name="minutes_short">%d min</string>
+    <string name="settings_test_notification">Test notification</string>
+    <string name="settings_battery">Battery settings</string>
+    <string name="settings_battery_hint">If reminders arrive late, allow the app to run in the background and disable battery optimization for it.</string>
+    <string name="settings_data">Data</string>
+    <string name="settings_data_hint">Everything is stored only on this phone. The app has no internet access and no cloud backup.</string>
+    <string name="settings_clear_journal">Clear journal</string>
+    <string name="settings_clear_journal_text">All journal entries will be deleted. This cannot be undone.</string>
+    <string name="settings_delete_all">Delete all data</string>
+    <string name="settings_delete_all_text">All medications and the journal will be deleted. This cannot be undone.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %s</string>
+    <string name="warn_notifications">Notifications are turned off, so reminders will not appear.</string>
+    <string name="warn_exact_alarm">Exact alarms are not allowed, so reminders may be late.</string>
+    <string name="action_allow">Allow</string>
+    <string name="action_open_settings">Open settings</string>
+
+    <string name="channel_doses">Medication reminders</string>
+    <string name="channel_doses_desc">Time-to-take notifications</string>
+    <string name="channel_stock">Refill reminders</string>
+    <string name="channel_stock_desc">Running low on pills</string>
+    <string name="notif_public_title">Time to take your medication</string>
+    <string name="notif_low_stock_title">Running low</string>
+    <string name="notif_low_stock_text">%1$s: %2$d left. Time to refill.</string>
+    <string name="notif_test_title">Test notification</string>
+    <string name="notif_test_text">Reminders are working.</string>
+</resources>
