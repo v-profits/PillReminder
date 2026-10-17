@@ -8,6 +8,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 enum class IntakeStatus { TAKEN, SKIPPED, MISSED }
 
@@ -36,8 +37,13 @@ data class Medication(
     /** Приёмы раньше этого момента не существуют (после создания/смены расписания). */
     val effectiveFrom: Long = System.currentTimeMillis(),
 ) {
-    fun times(): List<LocalTime> =
-        timesCsv.split(",").filter { it.isNotBlank() }.map { LocalTime.parse(it.trim()) }.sorted()
+    /** Время и количество (в четвертях таблетки) для каждого приёма. Формат timesCsv: "08:00=2,20:00=1". */
+    fun schedule(): List<Pair<LocalTime, Int>> = parseSchedule(timesCsv, doseQuarters)
+
+    fun times(): List<LocalTime> = schedule().map { it.first }
+
+    /** Сколько принимать в указанное время. */
+    fun quartersAt(time: LocalTime): Int = schedule().firstOrNull { it.first == time }?.second ?: doseQuarters
 
     companion object {
         const val ALL_DAYS = 127
@@ -69,7 +75,20 @@ fun millisToLdt(ms: Long): LocalDateTime =
 
 data class Dose(val med: Medication, val at: LocalDateTime) {
     val millis: Long get() = at.toMillis()
+    val quarters: Int get() = med.quartersAt(at.toLocalTime())
 }
+
+private val HHMM: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+/** "08:00=2,20:00=1" → [(08:00, 2), (20:00, 1)]. Запись без "=Q" получает [default] (старый формат "08:00,20:00"). */
+fun parseSchedule(csv: String, default: Int = 4): List<Pair<LocalTime, Int>> =
+    csv.split(",").filter { it.isNotBlank() }.map { part ->
+        val p = part.trim().split("=")
+        LocalTime.parse(p[0]) to (p.getOrNull(1)?.toIntOrNull() ?: default)
+    }.sortedBy { it.first }
+
+fun encodeSchedule(items: List<Pair<LocalTime, Int>>): String =
+    items.sortedBy { it.first }.joinToString(",") { "${it.first.format(HHMM)}=${it.second}" }
 
 fun Medication.occurrencesOn(date: LocalDate): List<LocalDateTime> {
     val day = date.toEpochDay()

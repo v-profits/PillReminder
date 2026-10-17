@@ -83,7 +83,7 @@ private fun buildToday(meds: List<Medication>, logs: List<IntakeLog>, day: Local
         for (t in m.occurrencesOn(day)) {
             val key = m.id to t.toMillis()
             val log = todays[key]
-            result[key] = DoseItem(m.id, m.name, m.dosage, m.notes, t, log, log?.doseQuarters ?: m.doseQuarters)
+            result[key] = DoseItem(m.id, m.name, m.dosage, m.notes, t, log, log?.doseQuarters ?: m.quartersAt(t.toLocalTime()))
         }
     }
     // Записи журнала, для которых расписание уже изменилось или лекарство удалено

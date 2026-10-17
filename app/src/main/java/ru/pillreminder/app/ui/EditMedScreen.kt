@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -48,7 +50,9 @@ import androidx.compose.ui.unit.dp
 import ru.pillreminder.app.MainViewModel
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.Medication
+import ru.pillreminder.app.data.encodeSchedule
 import ru.pillreminder.app.data.formatAmount
+import ru.pillreminder.app.data.parseSchedule
 import ru.pillreminder.app.data.parseQuarters
 import ru.pillreminder.app.data.quartersGlyph
 import ru.pillreminder.app.data.quartersToInput
@@ -63,7 +67,8 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     var name by rememberSaveable { mutableStateOf("") }
     var dosage by rememberSaveable { mutableStateOf("") }
     var notes by rememberSaveable { mutableStateOf("") }
-    var timesCsv by rememberSaveable { mutableStateOf("08:00") }
+    // Формат "08:00=2,20:00=1": время и количество в четвертях таблетки
+    var timesCsv by rememberSaveable { mutableStateOf("08:00=4") }
     var daysMask by rememberSaveable { mutableStateOf(Medication.ALL_DAYS) }
     var courseDays by rememberSaveable { mutableStateOf("") }
     var stock by rememberSaveable { mutableStateOf("") }
@@ -74,7 +79,6 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     val locale = currentLocale()
     val voice = rememberVoiceController()
     val ctx = LocalContext.current
-    var doseQuarters by rememberSaveable { mutableStateOf(4) }
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -84,19 +88,18 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 name = m.name
                 dosage = m.dosage
                 notes = m.notes
-                timesCsv = m.timesCsv
+                timesCsv = encodeSchedule(m.schedule())
                 daysMask = m.daysMask
                 courseDays = m.endEpochDay?.let { (it - m.startEpochDay + 1).toString() }.orEmpty()
                 stock = m.stock?.let(::quartersToInput).orEmpty()
-                doseQuarters = m.doseQuarters
                 threshold = m.refillThreshold.toString()
             }
             loaded = true
         }
     }
 
-    val times = timesCsv.split(",").filter { it.isNotBlank() }
-    val canSave = name.isNotBlank() && times.isNotEmpty() && daysMask != 0
+    val sched = parseSchedule(timesCsv)
+    val canSave = name.isNotBlank() && sched.isNotEmpty() && daysMask != 0
 
     Scaffold(
         topBar = {
@@ -144,37 +147,43 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Text(stringResource(R.string.field_amount), style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(1, 2, 3, 4, 6, 8, 12).forEach { q ->
-                    FilterChip(
-                        selected = doseQuarters == q,
-                        onClick = { doseQuarters = q },
-                        label = { Text(quartersGlyph(q)) },
-                    )
-                }
-            }
-            Text(
-                formatAmount(ctx, doseQuarters),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
             Text(stringResource(R.string.field_times), style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                times.forEach { t ->
-                    InputChip(
-                        selected = false,
-                        onClick = { timesCsv = times.filter { it != t }.joinToString(",") },
-                        label = { Text(t) },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Filled.Close,
-                                contentDescription = stringResource(R.string.delete),
-                                modifier = Modifier.size(18.dp),
+            // Для каждого времени приёма своё количество таблеток
+            sched.forEach { (time, q) ->
+                OutlinedCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                time.format(TimeFmt),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.weight(1f),
                             )
-                        },
-                    )
+                            Text(
+                                formatAmount(ctx, q),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            if (sched.size > 1) {
+                                IconButton(onClick = { timesCsv = encodeSchedule(sched.filter { it.first != time }) }) {
+                                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.delete))
+                                }
+                            }
+                        }
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            listOf(1, 2, 3, 4, 6, 8, 12).forEach { opt ->
+                                FilterChip(
+                                    selected = q == opt,
+                                    onClick = {
+                                        timesCsv = encodeSchedule(sched.map { if (it.first == time) it.first to opt else it })
+                                    },
+                                    label = { Text(quartersGlyph(opt)) },
+                                )
+                            }
+                        }
+                    }
                 }
             }
             OutlinedButton(onClick = { showTime = true }) { Text(stringResource(R.string.time_add)) }
@@ -223,7 +232,7 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                     val base = original
                     val start = base?.startEpochDay ?: LocalDate.now().toEpochDay()
                     val end = courseDays.toIntOrNull()?.takeIf { it > 0 }?.let { start + it - 1 }
-                    val sortedTimes = times.distinct().sorted().joinToString(",")
+                    val sortedTimes = encodeSchedule(sched)
                     val med = (base ?: Medication(name = "")).copy(
                         name = name.trim(),
                         dosage = dosage.trim(),
@@ -233,10 +242,11 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                         startEpochDay = start,
                         endEpochDay = end,
                         stock = parseQuarters(stock),
-                        doseQuarters = doseQuarters,
+                        doseQuarters = sched.first().second,
                         refillThreshold = threshold.toIntOrNull() ?: 5,
                     )
-                    val changed = base == null || base.timesCsv != sortedTimes ||
+                    // Смена только количества не сбрасывает расписание; смена времени или дней — сбрасывает
+                    val changed = base == null || base.times() != sched.map { it.first } ||
                         base.daysMask != daysMask || base.endEpochDay != end
                     vm.saveMed(med, changed, onClose)
                 },
@@ -250,8 +260,12 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
             onDismissRequest = { showTime = false },
             confirmButton = {
                 TextButton(onClick = {
-                    val t = LocalTime.of(state.hour, state.minute).format(TimeFmt)
-                    timesCsv = (times + t).distinct().sorted().joinToString(",")
+                    val t = LocalTime.of(state.hour, state.minute)
+                    if (sched.none { it.first == t }) {
+                        // Новое время по умолчанию получает то же количество, что и последнее добавленное
+                        val q = sched.lastOrNull()?.second ?: 4
+                        timesCsv = encodeSchedule(sched + (t to q))
+                    }
                     showTime = false
                 }) { Text(stringResource(R.string.ok)) }
             },

@@ -15,7 +15,7 @@ object Intake {
 
         // Если приём уже был отмечен как принятый, используем ту долю, что списали тогда
         val quarters = existing?.takeIf { wasTaken }?.doseQuarters
-            ?: med?.doseQuarters
+            ?: med?.quartersAt(millisToLdt(at).toLocalTime())
             ?: existing?.doseQuarters
             ?: 4
 

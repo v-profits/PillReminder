@@ -48,10 +48,9 @@
     <string name="field_name">Name</string>
     <string name="field_dosage">Dosage</string>
     <string name="field_dosage_hint">e.g. 500 mg</string>
-    <string name="field_amount">Amount per intake</string>
     <string name="field_notes">Your note</string>
     <string name="field_notes_hint">e.g. with breakfast</string>
-    <string name="field_times">Times (tap to remove)</string>
+    <string name="field_times">Times and amount for each intake</string>
     <string name="time_add">Add time</string>
     <string name="field_days">Days of the week</string>
     <string name="field_course">Course length, days</string>

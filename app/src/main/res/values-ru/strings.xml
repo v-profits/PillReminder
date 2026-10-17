@@ -50,10 +50,9 @@
     <string name="field_name">Название</string>
     <string name="field_dosage">Дозировка</string>
     <string name="field_dosage_hint">например, 500 мг</string>
-    <string name="field_amount">Количество за приём</string>
     <string name="field_notes">Ваша заметка</string>
     <string name="field_notes_hint">например, во время завтрака</string>
-    <string name="field_times">Время приёма (нажмите, чтобы убрать)</string>
+    <string name="field_times">Время и количество для каждого приёма</string>
     <string name="time_add">Добавить время</string>
     <string name="field_days">Дни недели</string>
     <string name="field_course">Длительность курса, дней</string>

@@ -34,6 +34,7 @@ import ru.pillreminder.app.MainViewModel
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.Medication
 import ru.pillreminder.app.data.formatAmount
+import ru.pillreminder.app.data.quartersGlyph
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,12 +85,10 @@ private fun MedCard(med: Medication, onClick: () -> Unit, onActive: (Boolean) ->
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(med.name, style = MaterialTheme.typography.titleMedium)
+                if (med.dosage.isNotBlank()) Text(med.dosage, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    listOf(formatAmount(ctx, med.doseQuarters), med.dosage).filter { it.isNotBlank() }.joinToString(" · "),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    med.times().joinToString(", ") { it.format(TimeFmt) } + " · " + daysLabel(ctx, med.daysMask, locale),
+                    med.schedule().joinToString(", ") { "${it.first.format(TimeFmt)} (${quartersGlyph(it.second)})" } +
+                        " · " + daysLabel(ctx, med.daysMask, locale),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
