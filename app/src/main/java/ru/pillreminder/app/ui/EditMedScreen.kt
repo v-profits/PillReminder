@@ -41,12 +41,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ru.pillreminder.app.MainViewModel
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.Medication
+import ru.pillreminder.app.data.formatAmount
+import ru.pillreminder.app.data.parseQuarters
+import ru.pillreminder.app.data.quartersGlyph
+import ru.pillreminder.app.data.quartersToInput
+import ru.pillreminder.app.data.sanitizeDecimal
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -67,6 +73,8 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     var confirmDelete by remember { mutableStateOf(false) }
     val locale = currentLocale()
     val voice = rememberVoiceController()
+    val ctx = LocalContext.current
+    var doseQuarters by rememberSaveable { mutableStateOf(4) }
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -79,7 +87,8 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 timesCsv = m.timesCsv
                 daysMask = m.daysMask
                 courseDays = m.endEpochDay?.let { (it - m.startEpochDay + 1).toString() }.orEmpty()
-                stock = m.stock?.toString().orEmpty()
+                stock = m.stock?.let(::quartersToInput).orEmpty()
+                doseQuarters = m.doseQuarters
                 threshold = m.refillThreshold.toString()
             }
             loaded = true
@@ -135,6 +144,22 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            Text(stringResource(R.string.field_amount), style = MaterialTheme.typography.titleSmall)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(1, 2, 3, 4, 6, 8, 12).forEach { q ->
+                    FilterChip(
+                        selected = doseQuarters == q,
+                        onClick = { doseQuarters = q },
+                        label = { Text(quartersGlyph(q)) },
+                    )
+                }
+            }
+            Text(
+                formatAmount(ctx, doseQuarters),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
             Text(stringResource(R.string.field_times), style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 times.forEach { t ->
@@ -175,10 +200,10 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
             )
             VoiceTextField(
                 id = "stock", value = stock, voice = voice, numeric = true, maxDigits = 5,
-                onValueChange = { stock = it.filter(Char::isDigit).take(5) },
+                onValueChange = { stock = sanitizeDecimal(it) },
                 label = { Text(stringResource(R.string.field_stock)) },
                 supportingText = { Text(stringResource(R.string.field_stock_hint)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
             if (stock.isNotBlank()) {
@@ -207,7 +232,8 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                         daysMask = daysMask,
                         startEpochDay = start,
                         endEpochDay = end,
-                        stock = stock.toIntOrNull(),
+                        stock = parseQuarters(stock),
+                        doseQuarters = doseQuarters,
                         refillThreshold = threshold.toIntOrNull() ?: 5,
                     )
                     val changed = base == null || base.timesCsv != sortedTimes ||

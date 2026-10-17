@@ -13,6 +13,12 @@ object Intake {
         val dosage = med?.dosage ?: existing?.dosage.orEmpty()
         val wasTaken = existing?.status == IntakeStatus.TAKEN
 
+        // Если приём уже был отмечен как принятый, используем ту долю, что списали тогда
+        val quarters = existing?.takeIf { wasTaken }?.doseQuarters
+            ?: med?.doseQuarters
+            ?: existing?.doseQuarters
+            ?: 4
+
         db.logs().upsert(
             IntakeLog(
                 id = existing?.id ?: 0,
@@ -22,21 +28,23 @@ object Intake {
                 scheduledAt = at,
                 actedAt = System.currentTimeMillis(),
                 status = status,
+                doseQuarters = quarters,
             ),
         )
 
         if (med != null) {
             if (status == IntakeStatus.TAKEN && !wasTaken) {
                 val before = med.stock
-                db.meds().decrementStock(medId)
+                db.meds().decrementStock(medId, quarters)
                 if (before != null && before > 0) {
-                    val after = before - 1
-                    if (after <= med.refillThreshold && (before > med.refillThreshold || after == 0)) {
+                    val after = maxOf(before - quarters, 0)
+                    val limit = med.refillThreshold * 4
+                    if (after <= limit && (before > limit || after == 0)) {
                         Notifier.showLowStock(ctx, med, after)
                     }
                 }
             } else if (status != IntakeStatus.TAKEN && wasTaken) {
-                db.meds().incrementStock(medId)
+                db.meds().incrementStock(medId, quarters)
             }
         }
         Notifier.cancelDose(ctx, medId, at)
@@ -45,7 +53,7 @@ object Intake {
     suspend fun undo(ctx: Context, log: IntakeLog) {
         val db = AppDatabase.get(ctx)
         db.logs().delete(log)
-        if (log.status == IntakeStatus.TAKEN) db.meds().incrementStock(log.medicationId)
+        if (log.status == IntakeStatus.TAKEN) db.meds().incrementStock(log.medicationId, log.doseQuarters)
         Notifier.cancelDose(ctx, log.medicationId, log.scheduledAt)
     }
 }

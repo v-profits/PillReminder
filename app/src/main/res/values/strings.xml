@@ -37,11 +37,18 @@
     <string name="med_delete_title">Delete medication?</string>
     <string name="med_delete_text">The schedule will be removed. Past entries stay in the journal.</string>
     <string name="every_day">Every day</string>
-    <string name="stock_left">Left: %d</string>
+    <string name="stock_left">Left: %s</string>
+    <string name="amount_frac_small">%s tablet</string>
+    <string name="amount_frac_big">%s tablets</string>
+    <plurals name="tablets_count">
+        <item quantity="one">%d tablet</item>
+        <item quantity="other">%d tablets</item>
+    </plurals>
 
     <string name="field_name">Name</string>
     <string name="field_dosage">Dosage</string>
-    <string name="field_dosage_hint">e.g. 1 tablet</string>
+    <string name="field_dosage_hint">e.g. 500 mg</string>
+    <string name="field_amount">Amount per intake</string>
     <string name="field_notes">Your note</string>
     <string name="field_notes_hint">e.g. with breakfast</string>
     <string name="field_times">Times (tap to remove)</string>
@@ -50,7 +57,7 @@
     <string name="field_course">Course length, days</string>
     <string name="field_course_hint">Leave empty for no end date</string>
     <string name="field_stock">Pills left</string>
-    <string name="field_stock_hint">Optional. Decreases when you tap \"Taken\"</string>
+    <string name="field_stock_hint">Optional. Fractions allowed, e.g. 12.5. Decreases by the amount per intake when you tap \"Taken\"</string>
     <string name="field_threshold">Remind to refill when this many are left</string>
 
     <string name="period_7">7 days</string>
@@ -67,6 +74,7 @@
     <string name="csv_time">Time</string>
     <string name="csv_medication">Medication</string>
     <string name="csv_dosage">Dosage</string>
+    <string name="csv_amount">Amount</string>
     <string name="csv_status">Status</string>
     <string name="csv_recorded">Recorded at</string>
 
@@ -110,7 +118,7 @@
     <string name="channel_stock_desc">Running low on pills</string>
     <string name="notif_public_title">Time to take your medication</string>
     <string name="notif_low_stock_title">Running low</string>
-    <string name="notif_low_stock_text">%1$s: %2$d left. Time to refill.</string>
+    <string name="notif_low_stock_text">%1$s: %2$s left. Time to refill.</string>
     <string name="notif_test_title">Test notification</string>
     <string name="notif_test_text">Reminders are working.</string>
 </resources>

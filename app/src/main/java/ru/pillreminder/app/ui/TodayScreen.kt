@@ -43,6 +43,7 @@ import ru.pillreminder.app.data.IntakeLog
 import ru.pillreminder.app.data.IntakeStatus
 import ru.pillreminder.app.data.MISSED_AFTER_MIN
 import ru.pillreminder.app.data.Medication
+import ru.pillreminder.app.data.formatAmount
 import ru.pillreminder.app.data.millisToLdt
 import ru.pillreminder.app.data.occurrencesOn
 import ru.pillreminder.app.data.toMillis
@@ -56,6 +57,7 @@ private data class DoseItem(
     val notes: String,
     val at: LocalDateTime,
     val log: IntakeLog?,
+    val quarters: Int,
 )
 
 private enum class DoseState { UPCOMING, DUE, MISSED, TAKEN, SKIPPED }
@@ -80,13 +82,14 @@ private fun buildToday(meds: List<Medication>, logs: List<IntakeLog>, day: Local
     for (m in meds) {
         for (t in m.occurrencesOn(day)) {
             val key = m.id to t.toMillis()
-            result[key] = DoseItem(m.id, m.name, m.dosage, m.notes, t, todays[key])
+            val log = todays[key]
+            result[key] = DoseItem(m.id, m.name, m.dosage, m.notes, t, log, log?.doseQuarters ?: m.doseQuarters)
         }
     }
     // Записи журнала, для которых расписание уже изменилось или лекарство удалено
     for ((key, l) in todays) {
         if (key !in result) {
-            result[key] = DoseItem(l.medicationId, l.medName, l.dosage, "", millisToLdt(l.scheduledAt), l)
+            result[key] = DoseItem(l.medicationId, l.medName, l.dosage, "", millisToLdt(l.scheduledAt), l, l.doseQuarters)
         }
     }
     return result.values.sortedBy { it.at }
@@ -171,7 +174,10 @@ private fun DoseCard(item: DoseItem, now: LocalDateTime, vm: MainViewModel) {
                 )
                 Column(Modifier.weight(1f)) {
                     Text(item.name, style = MaterialTheme.typography.titleMedium)
-                    if (item.dosage.isNotBlank()) Text(item.dosage, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        listOf(formatAmount(ctx, item.quarters), item.dosage).filter { it.isNotBlank() }.joinToString(" · "),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                     if (item.notes.isNotBlank()) {
                         Text(
                             item.notes,

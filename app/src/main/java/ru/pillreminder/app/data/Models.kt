@@ -26,7 +26,11 @@ data class Medication(
     val daysMask: Int = ALL_DAYS,
     val startEpochDay: Long = LocalDate.now().toEpochDay(),
     val endEpochDay: Long? = null,
+    /** Остаток в четвертях таблетки (4 = одна таблетка). */
     val stock: Int? = null,
+    /** Сколько принимать за раз, в четвертях таблетки (1 = ¼, 2 = ½, 4 = 1). */
+    val doseQuarters: Int = 4,
+    /** Порог напоминания о покупке, в целых таблетках. */
     val refillThreshold: Int = 5,
     val active: Boolean = true,
     /** Приёмы раньше этого момента не существуют (после создания/смены расписания). */
@@ -54,6 +58,8 @@ data class IntakeLog(
     /** Когда пользователь отметил приём (null для автоматически пропущенных) */
     val actedAt: Long?,
     val status: IntakeStatus,
+    /** Сколько таблетки было принято/списано, в четвертях. */
+    val doseQuarters: Int = 4,
 )
 
 fun LocalDateTime.toMillis(): Long = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

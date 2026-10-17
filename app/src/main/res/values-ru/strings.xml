@@ -37,11 +37,20 @@
     <string name="med_delete_title">Удалить лекарство?</string>
     <string name="med_delete_text">Расписание будет удалено. Прошлые записи останутся в журнале.</string>
     <string name="every_day">Каждый день</string>
-    <string name="stock_left">Осталось: %d</string>
+    <string name="stock_left">Осталось: %s</string>
+    <string name="amount_frac_small">%s таблетки</string>
+    <string name="amount_frac_big">%s таблетки</string>
+    <plurals name="tablets_count">
+        <item quantity="one">%d таблетка</item>
+        <item quantity="few">%d таблетки</item>
+        <item quantity="many">%d таблеток</item>
+        <item quantity="other">%d таблетки</item>
+    </plurals>
 
     <string name="field_name">Название</string>
     <string name="field_dosage">Дозировка</string>
-    <string name="field_dosage_hint">например, 1 таблетка</string>
+    <string name="field_dosage_hint">например, 500 мг</string>
+    <string name="field_amount">Количество за приём</string>
     <string name="field_notes">Ваша заметка</string>
     <string name="field_notes_hint">например, во время завтрака</string>
     <string name="field_times">Время приёма (нажмите, чтобы убрать)</string>
@@ -50,7 +59,7 @@
     <string name="field_course">Длительность курса, дней</string>
     <string name="field_course_hint">Оставьте пустым, если срока нет</string>
     <string name="field_stock">Осталось таблеток</string>
-    <string name="field_stock_hint">Необязательно. Уменьшается при нажатии «Принял»</string>
+    <string name="field_stock_hint">Необязательно. Можно дробное, например 12.5. Уменьшается на количество за приём при нажатии «Принял»</string>
     <string name="field_threshold">Напомнить о покупке, когда останется</string>
 
     <string name="period_7">7 дней</string>
@@ -67,6 +76,7 @@
     <string name="csv_time">Время</string>
     <string name="csv_medication">Лекарство</string>
     <string name="csv_dosage">Дозировка</string>
+    <string name="csv_amount">Количество</string>
     <string name="csv_status">Статус</string>
     <string name="csv_recorded">Отмечено</string>
 
@@ -110,7 +120,7 @@
     <string name="channel_stock_desc">Таблетки заканчиваются</string>
     <string name="notif_public_title">Пора принять лекарство</string>
     <string name="notif_low_stock_title">Лекарство заканчивается</string>
-    <string name="notif_low_stock_text">%1$s: осталось %2$d. Пора пополнить запас.</string>
+    <string name="notif_low_stock_text">%1$s: осталось %2$s. Пора пополнить запас.</string>
     <string name="notif_test_title">Проверка уведомления</string>
     <string name="notif_test_text">Напоминания работают.</string>
 </resources>

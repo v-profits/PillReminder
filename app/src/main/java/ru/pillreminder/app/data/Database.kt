@@ -10,6 +10,8 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -32,11 +34,11 @@ interface MedicationDao {
     @Delete
     suspend fun delete(m: Medication)
 
-    @Query("UPDATE medications SET stock = stock - 1 WHERE id = :id AND stock IS NOT NULL AND stock > 0")
-    suspend fun decrementStock(id: Long)
+    @Query("UPDATE medications SET stock = MAX(stock - :quarters, 0) WHERE id = :id AND stock IS NOT NULL")
+    suspend fun decrementStock(id: Long, quarters: Int)
 
-    @Query("UPDATE medications SET stock = stock + 1 WHERE id = :id AND stock IS NOT NULL")
-    suspend fun incrementStock(id: Long)
+    @Query("UPDATE medications SET stock = stock + :quarters WHERE id = :id AND stock IS NOT NULL")
+    suspend fun incrementStock(id: Long, quarters: Int)
 
     @Query("DELETE FROM medications")
     suspend fun clear()
@@ -63,7 +65,16 @@ interface LogDao {
     suspend fun clear()
 }
 
-@Database(entities = [Medication::class, IntakeLog::class], version = 1, exportSchema = false)
+/** v1 → v2: доза за приём и остаток в четвертях таблетки (старые остатки умножаются на 4). */
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE medications ADD COLUMN doseQuarters INTEGER NOT NULL DEFAULT 4")
+        db.execSQL("UPDATE medications SET stock = stock * 4 WHERE stock IS NOT NULL")
+        db.execSQL("ALTER TABLE intake_log ADD COLUMN doseQuarters INTEGER NOT NULL DEFAULT 4")
+    }
+}
+
+@Database(entities = [Medication::class, IntakeLog::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun meds(): MedicationDao
     abstract fun logs(): LogDao
@@ -78,7 +89,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "pills.db",
-                ).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2).build().also { instance = it }
             }
     }
 }

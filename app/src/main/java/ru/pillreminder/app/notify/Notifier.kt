@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import ru.pillreminder.app.MainActivity
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.Medication
+import ru.pillreminder.app.data.formatAmount
 import ru.pillreminder.app.data.Prefs
 import java.util.Date
 import java.util.Objects
@@ -70,7 +71,9 @@ object Notifier {
         if (!canPost(ctx)) return
         val id = notifId(med.id, at)
         val time = DateFormat.getTimeFormat(ctx).format(Date(at))
-        val text = if (med.dosage.isBlank()) time else "${med.dosage} · $time"
+        val text = listOf(formatAmount(ctx, med.doseQuarters), med.dosage, time)
+            .filter { it.isNotBlank() }
+            .joinToString(" · ")
         val b = NotificationCompat.Builder(ctx, CH_DOSE)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(med.name)
@@ -99,12 +102,13 @@ object Notifier {
     }
 
     @SuppressLint("MissingPermission")
+    /** [left] — остаток в четвертях таблетки. */
     fun showLowStock(ctx: Context, med: Medication, left: Int) {
         if (!canPost(ctx)) return
         val n = NotificationCompat.Builder(ctx, CH_STOCK)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(ctx.getString(R.string.notif_low_stock_title))
-            .setContentText(ctx.getString(R.string.notif_low_stock_text, med.name, left))
+            .setContentText(ctx.getString(R.string.notif_low_stock_text, med.name, formatAmount(ctx, left)))
             .setAutoCancel(true)
             .setContentIntent(openAppIntent(ctx, 7_000_000 + med.id.toInt()))
             .build()

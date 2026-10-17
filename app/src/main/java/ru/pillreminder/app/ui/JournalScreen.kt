@@ -43,6 +43,7 @@ import ru.pillreminder.app.MainViewModel
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.IntakeLog
 import ru.pillreminder.app.data.IntakeStatus
+import ru.pillreminder.app.data.formatAmount
 import ru.pillreminder.app.data.millisToLdt
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -151,9 +152,11 @@ private fun LogRow(log: IntakeLog, vm: MainViewModel) {
                 Text(millisToLdt(log.scheduledAt).format(TimeFmt), style = MaterialTheme.typography.titleMedium)
                 Column(Modifier.weight(1f)) {
                     Text(log.medName, style = MaterialTheme.typography.bodyLarge)
-                    if (log.dosage.isNotBlank()) {
-                        Text(log.dosage, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
-                    }
+                    Text(
+                        listOf(formatAmount(ctx, log.doseQuarters), log.dosage).filter { it.isNotBlank() }.joinToString(" · "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                    )
                 }
                 Text(statusLabel(ctx, log.status), color = color, style = MaterialTheme.typography.labelLarge)
             }

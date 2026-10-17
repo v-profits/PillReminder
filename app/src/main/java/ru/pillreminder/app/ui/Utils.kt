@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.IntakeLog
 import ru.pillreminder.app.data.IntakeStatus
+import ru.pillreminder.app.data.formatAmount
 import ru.pillreminder.app.data.Medication
 import ru.pillreminder.app.data.millisToLdt
 import java.io.File
@@ -65,6 +66,7 @@ fun shareJournalCsv(ctx: Context, logs: List<IntakeLog>) {
     sb.append(listOf(
         ctx.getString(R.string.csv_date), ctx.getString(R.string.csv_time),
         ctx.getString(R.string.csv_medication), ctx.getString(R.string.csv_dosage),
+        ctx.getString(R.string.csv_amount),
         ctx.getString(R.string.csv_status), ctx.getString(R.string.csv_recorded),
     ).joinToString(";")).append("\r\n")
     for (l in logs.sortedBy { it.scheduledAt }) {
@@ -72,6 +74,7 @@ fun shareJournalCsv(ctx: Context, logs: List<IntakeLog>) {
         val acted = l.actedAt?.let { millisToLdt(it).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) }.orEmpty()
         sb.append(listOf(
             at.format(dateFmt), at.format(TimeFmt), esc(l.medName), esc(l.dosage),
+            esc(formatAmount(ctx, l.doseQuarters)),
             statusLabel(ctx, l.status), acted,
         ).joinToString(";")).append("\r\n")
     }
