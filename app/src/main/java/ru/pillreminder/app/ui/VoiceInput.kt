@@ -1,16 +1,12 @@
 package ru.pillreminder.app.ui
 
-import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.AudioManager
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,34 +17,26 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import ru.pillreminder.app.R
 import ru.pillreminder.app.data.Prefs
 import java.util.Locale
 
 /**
- * Голосовой ввод без звуковых сигналов.
+ * Голосовой ввод через стандартное окно распознавания речи Google (RecognizerIntent), без звуковых сигналов.
  *
- * Использует системный SpeechRecognizer (без собственного диалога), на время распознавания
- * приглушает звуковые сигналы начала/конца записи и потом возвращает громкость обратно.
- * В текстовых полях речь ДОПИСЫВАЕТСЯ к уже введённому (первая буква и буква после . ! ? — заглавные);
+ * На время показа окна приглушаются звуковые сигналы начала/конца записи, потом громкость возвращается.
+ * Сама программа микрофон не использует и разрешение на запись звука не запрашивает: речь обрабатывает
+ * системный сервис распознавания.
+ * В текстовых полях речь ДОПИСЫВАЕТСЯ к уже введённому (первая буква и буква после . ! ? — заглавные),
  * в числовых полях значение заменяется. Очистить поле можно крестиком.
  */
 @Stable
@@ -56,78 +44,20 @@ class VoiceController internal constructor(
     private val ctx: Context,
     private val locale: Locale,
 ) {
-    val available: Boolean = SpeechRecognizer.isRecognitionAvailable(ctx)
+    val available: Boolean =
+        ctx.packageManager.queryIntentActivities(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0).isNotEmpty()
 
-    /** Идентификатор поля, которое сейчас слушает микрофон (null — никто). */
-    var activeId by mutableStateOf<String?>(null)
-        private set
+    internal var launch: (Intent) -> Unit = {}
+    private var pending: ((String) -> Unit)? = null
 
-    internal var requestPermission: () -> Unit = {}
-    private var pendingStart: (() -> Unit)? = null
-
-    private var recognizer: SpeechRecognizer? = null
     private val audio = ctx.getSystemService(AudioManager::class.java)
     private val prefs = Prefs(ctx)
     private val handler = Handler(Looper.getMainLooper())
     private val mutedByUs = mutableListOf<Int>()
     private val unmuteRunnable = Runnable { unmuteBeeps() }
 
-    private fun hasPermission() =
-        ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-
-    /** Нажатие на микрофон: начать запись для поля [id] или остановить, если оно уже слушает. */
-    fun toggle(id: String, onText: (String) -> Unit) {
-        if (activeId == id) {
-            recognizer?.stopListening()
-            return
-        }
-        cancel()
-        val start = { begin(id, onText) }
-        if (hasPermission()) {
-            start()
-        } else {
-            pendingStart = start
-            requestPermission()
-        }
-    }
-
-    internal fun onPermissionResult(granted: Boolean) {
-        val start = pendingStart
-        pendingStart = null
-        if (granted) start?.invoke()
-        else Toast.makeText(ctx, R.string.voice_permission_denied, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun begin(id: String, onText: (String) -> Unit) {
-        val rec = SpeechRecognizer.createSpeechRecognizer(ctx)
-        recognizer = rec
-        activeId = id
-        rec.setRecognitionListener(object : RecognitionListener {
-            override fun onResults(results: Bundle?) {
-                firstResult(results)?.let(onText)
-                finish()
-            }
-
-            override fun onPartialResults(partialResults: Bundle?) {
-                firstResult(partialResults)?.let(onText)
-            }
-
-            override fun onError(error: Int) {
-                val silent = error == SpeechRecognizer.ERROR_NO_MATCH ||
-                    error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT ||
-                    error == SpeechRecognizer.ERROR_CLIENT
-                if (!silent) Toast.makeText(ctx, R.string.voice_error, Toast.LENGTH_SHORT).show()
-                finish()
-            }
-
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {}
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
-
+    /** Показать окно распознавания; результат придёт в [onText]. */
+    fun start(onText: (String) -> Unit) {
         val lang = when (locale.language) {
             "ru" -> "ru-RU"
             "en" -> "en-US"
@@ -136,41 +66,38 @@ class VoiceController internal constructor(
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang)
-            .putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
             .putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
-            .putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, ctx.packageName)
-
+        pending = onText
         muteBeeps()
         try {
-            rec.startListening(intent)
+            launch(intent)
         } catch (e: Exception) {
+            pending = null
             Toast.makeText(ctx, R.string.voice_error, Toast.LENGTH_SHORT).show()
-            finish()
+            scheduleUnmute()
         }
     }
 
-    private fun firstResult(b: Bundle?): String? =
-        b?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.takeIf { it.isNotBlank() }
-
-    /** Отменить запись без результата (смена поля, уход с экрана, сворачивание приложения). */
-    fun cancel() {
-        recognizer?.cancel()
-        finish()
+    internal fun onResult(code: Int, data: Intent?) {
+        val callback = pending
+        pending = null
+        scheduleUnmute()
+        if (code != Activity.RESULT_OK) return
+        data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            ?.firstOrNull()?.takeIf { it.isNotBlank() }
+            ?.let { callback?.invoke(it) }
     }
 
-    private fun finish() {
-        activeId = null
-        recognizer?.destroy()
-        recognizer = null
-        // Небольшая задержка, чтобы не прозвучал «хвост» сигнала окончания записи
+    /** Небольшая задержка, чтобы не прозвучал «хвост» сигнала окончания записи. */
+    private fun scheduleUnmute() {
         handler.removeCallbacks(unmuteRunnable)
-        handler.postDelayed(unmuteRunnable, 400)
+        handler.postDelayed(unmuteRunnable, 600)
     }
 
     fun release() {
-        cancel()
         handler.removeCallbacks(unmuteRunnable)
+        pending = null
         unmuteBeeps()
     }
 
@@ -208,7 +135,7 @@ class VoiceController internal constructor(
             AudioManager.STREAM_SYSTEM,
         )
 
-        /** Вызывается при старте приложения: вернуть звук, если прошлый запуск был прерван во время записи. */
+        /** Вызывается при старте приложения: вернуть звук, если прошлый запуск был прерван во время распознавания. */
         fun restoreAudio(ctx: Context) {
             val prefs = Prefs(ctx)
             val saved = prefs.mutedStreams
@@ -230,26 +157,20 @@ fun rememberVoiceController(): VoiceController {
     val ctx = LocalContext.current
     val locale = currentLocale()
     val controller = remember(locale) { VoiceController(ctx, locale) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        controller.onPermissionResult(it)
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        controller.onResult(it.resultCode, it.data)
     }
-    controller.requestPermission = { launcher.launch(Manifest.permission.RECORD_AUDIO) }
-
-    val owner = LocalLifecycleOwner.current
-    DisposableEffect(controller, owner) {
-        val obs = LifecycleEventObserver { _, e -> if (e == Lifecycle.Event.ON_STOP) controller.cancel() }
-        owner.lifecycle.addObserver(obs)
-        onDispose {
-            owner.lifecycle.removeObserver(obs)
-            controller.release()
-        }
+    controller.launch = { launcher.launch(it) }
+    // Окно Google закрывает наш экран только «поверх», поэтому звук возвращаем лишь при выходе с экрана
+    DisposableEffect(controller) {
+        onDispose { controller.release() }
     }
     return controller
 }
 
 /**
- * Поле ввода с кнопкой микрофона и крестиком очистки. Распознанный текст дописывается к текущему.
- * Для числовых полей ([numeric]) из речи извлекается число («двадцать пять» → 25).
+ * Поле ввода с кнопкой микрофона и крестиком очистки.
+ * Для числовых полей ([numeric]) из речи извлекается число («двадцать пять» → 25) и заменяет значение.
  */
 @Composable
 fun VoiceTextField(
@@ -280,20 +201,16 @@ fun VoiceTextField(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Крестик появляется, когда в поле что-то есть
                     if (value.isNotEmpty()) {
-                        IconButton(onClick = {
-                            if (voice.activeId == id) voice.cancel()
-                            onValueChange("")
-                        }) {
+                        IconButton(onClick = { onValueChange("") }) {
                             Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.field_clear))
                         }
                     }
                     if (voice.available) {
-                        val active = voice.activeId == id
                         IconButton(
                             onClick = {
                                 // Текст в поле на момент нажатия: новая речь дописывается к нему
                                 val base = value
-                                voice.toggle(id) { raw ->
+                                voice.start { raw ->
                                     val text = if (numeric) {
                                         parseSpokenNumber(raw)?.toString()?.take(maxDigits)
                                     } else {
@@ -302,19 +219,8 @@ fun VoiceTextField(
                                     if (!text.isNullOrEmpty()) onValueChange(text)
                                 }
                             },
-                            colors = if (active) {
-                                IconButtonDefaults.iconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                )
-                            } else {
-                                IconButtonDefaults.iconButtonColors()
-                            },
                         ) {
-                            Icon(
-                                Icons.Filled.Mic,
-                                contentDescription = stringResource(if (active) R.string.voice_stop else R.string.voice_start),
-                            )
+                            Icon(Icons.Filled.Mic, contentDescription = stringResource(R.string.voice_start))
                         }
                     }
                 }

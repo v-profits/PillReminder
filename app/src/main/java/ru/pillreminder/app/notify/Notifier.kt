@@ -29,7 +29,6 @@ object Notifier {
 
     const val ACTION_TAKEN = "ru.pillreminder.app.ACTION_TAKEN"
     const val ACTION_SKIP = "ru.pillreminder.app.ACTION_SKIP"
-    const val ACTION_SNOOZE = "ru.pillreminder.app.ACTION_SNOOZE"
     const val ACTION_DISMISSED = "ru.pillreminder.app.ACTION_DISMISSED"
     const val EXTRA_MED = "med_id"
     const val EXTRA_AT = "scheduled_at"
@@ -87,7 +86,6 @@ object Notifier {
             .setContentIntent(openAppIntent(ctx, id))
             .setDeleteIntent(actionIntent(ctx, ACTION_DISMISSED, med.id, at))
             .addAction(0, ctx.getString(R.string.action_taken), actionIntent(ctx, ACTION_TAKEN, med.id, at))
-            .addAction(0, ctx.getString(R.string.action_snooze_short), actionIntent(ctx, ACTION_SNOOZE, med.id, at))
             .addAction(0, ctx.getString(R.string.action_skip), actionIntent(ctx, ACTION_SKIP, med.id, at))
         if (Prefs(ctx).hideOnLockScreen) {
             val pub = NotificationCompat.Builder(ctx, CH_DOSE)

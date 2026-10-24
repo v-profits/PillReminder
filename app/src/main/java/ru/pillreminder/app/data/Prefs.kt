@@ -15,10 +15,6 @@ class Prefs(context: Context) {
         get() = sp.getBoolean("hide_lock", false)
         set(v) = sp.edit { putBoolean("hide_lock", v) }
 
-    var snoozeMinutes: Int
-        get() = sp.getInt("snooze", 10)
-        set(v) = sp.edit { putInt("snooze", v) }
-
     /** Через сколько минут повторить напоминание, если уведомление смахнули, а приём не отмечен (0 — не повторять). */
     var repeatMinutes: Int
         get() = sp.getInt("repeat", 10)

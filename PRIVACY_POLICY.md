@@ -18,7 +18,7 @@
 
 - Уведомления: чтобы показывать напоминания.
 - Точные будильники и автозапуск после перезагрузки: чтобы напоминания приходили вовремя.
-- Микрофон: только для кнопки голосового ввода в полях формы. Приложение не записывает и не сохраняет звук. Речь распознаёт служба распознавания речи, установленная на вашем устройстве (например, Google или производителя телефона); приложение просит её работать офлайн, если это поддерживается. Если офлайн-режим недоступен, эта служба может передавать звук на свои серверы по собственным правилам. Если не хотите этого, вводите текст с клавиатуры.
+- Голосовой ввод: кнопка микрофона в полях формы открывает стандартное окно распознавания речи Google (или другой службы на вашем устройстве). Приложение само не получает доступ к микрофону, не записывает и не сохраняет звук, получает только готовый текст. Приложение просит службу работать офлайн, если это поддерживается; если офлайн-режим недоступен, служба может передавать звук на свои серверы по собственным правилам. Если не хотите этого, вводите текст с клавиатуры.
 
 ## Медицинская оговорка
 
@@ -44,7 +44,7 @@ Last updated: October 17, 2026
 
 **Export.** "Export CSV" creates a journal file and opens the system share sheet; the file goes only to the app you choose.
 
-**Permissions.** Notifications (to show reminders); exact alarms and boot-completed (to deliver reminders on time); microphone (only for the voice-input button in form fields). The app does not record or store audio. Speech is recognized by the speech service installed on your device (e.g. Google's or your phone maker's); the app asks it to work offline when supported. If offline recognition is unavailable, that service may send audio to its own servers under its own policy. If you prefer to avoid this, type with the keyboard.
+**Permissions.** Notifications (to show reminders); exact alarms and boot-completed (to deliver reminders on time). The app itself does not use the microphone (no audio permission): the voice-input button opens the standard speech-recognition window of the speech service installed on your device. The app does not record or store audio and only receives the resulting text. Speech is recognized by the speech service installed on your device (e.g. Google's or your phone maker's); the app asks it to work offline when supported. If offline recognition is unavailable, that service may send audio to its own servers under its own policy. If you prefer to avoid this, type with the keyboard.
 
 **Medical disclaimer.** The app only reminds you to take medications. It provides no medical advice, dosing recommendations or diagnoses and does not replace a doctor.
 

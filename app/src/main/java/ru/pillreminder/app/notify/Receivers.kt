@@ -9,7 +9,9 @@ import kotlinx.coroutines.launch
 import ru.pillreminder.app.data.AppDatabase
 import ru.pillreminder.app.data.Intake
 import ru.pillreminder.app.data.IntakeStatus
-import ru.pillreminder.app.data.MISSED_AFTER_MIN
+
+/** Максимум часов после времени приёма, пока неотмеченный приём продолжает напоминать. */
+private const val REPEAT_MAX_HOURS = 12L
 
 private fun BroadcastReceiver.async(block: suspend () -> Unit) {
     val pending = goAsync()
@@ -32,10 +34,12 @@ class AlarmReceiver : BroadcastReceiver() {
                 val at = intent.getLongExtra(Notifier.EXTRA_AT, -1)
                 val db = AppDatabase.get(app)
                 val med = db.meds().get(medId)
-                if (System.currentTimeMillis() - at > MISSED_AFTER_MIN * 60_000L) {
-                    // Окно приёма закрыто: больше не напоминаем, отмечаем как «не отмечено»
+                // Повторяем, пока приём не отмечен как принятый/пропущенный (не дольше REPEAT_MAX_HOURS)
+                val log = db.logs().find(medId, at)
+                val pending = log == null || log.status == IntakeStatus.MISSED
+                if (System.currentTimeMillis() - at > REPEAT_MAX_HOURS * 3_600_000L) {
                     Reminders.refresh(app)
-                } else if (med != null && db.logs().find(medId, at) == null) {
+                } else if (med != null && pending) {
                     Notifier.showDose(app, med, at)
                 }
             } else {
@@ -58,11 +62,8 @@ class ActionReceiver : BroadcastReceiver() {
                 Notifier.ACTION_SKIP -> Intake.mark(app, medId, at, IntakeStatus.SKIPPED)
                 Notifier.ACTION_DISMISSED -> {
                     // Уведомление смахнули, а приём не отмечен — напомнить ещё раз
-                    if (AppDatabase.get(app).logs().find(medId, at) == null) Reminders.scheduleRepeat(app, medId, at)
-                }
-                Notifier.ACTION_SNOOZE -> {
-                    Notifier.cancelDose(app, medId, at)
-                    Reminders.scheduleSnooze(app, medId, at)
+                    val log = AppDatabase.get(app).logs().find(medId, at)
+                    if (log == null || log.status == IntakeStatus.MISSED) Reminders.scheduleRepeat(app, medId, at)
                 }
             }
         }

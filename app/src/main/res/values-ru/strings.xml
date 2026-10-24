@@ -23,7 +23,6 @@
     <string name="action_taken">Принял</string>
     <string name="action_skip">Пропустить</string>
     <string name="action_undo">Отменить</string>
-    <string name="action_snooze_short">Отложить</string>
     <string name="status_taken">Принято</string>
     <string name="status_taken_at">Принято в %s</string>
     <string name="status_skipped">Пропущено</string>
@@ -97,11 +96,10 @@
     <string name="settings_notifications">Уведомления</string>
     <string name="settings_hide_lock">Скрывать названия на экране блокировки</string>
     <string name="settings_hide_lock_hint">В уведомлении будет только сообщение, что пора принять лекарство</string>
-    <string name="settings_snooze">Отложить на</string>
     <string name="minutes_short">%d мин</string>
     <string name="settings_repeat">Повторять, если не отмечено</string>
     <string name="settings_repeat_off">Выкл</string>
-    <string name="settings_repeat_hint">Если уведомление смахнули, а приём не отмечен, оно появится снова через выбранное время. Повторы прекращаются через 2 часа после времени приёма. 0 — не повторять.</string>
+    <string name="settings_repeat_hint">Если уведомление смахнули, а приём не отмечен, оно появится снова через выбранное время. Как только вы нажмёте «Принял» или «Пропустить», повторов не будет. 0 — не повторять.</string>
     <string name="settings_test_notification">Проверить уведомление</string>
     <string name="settings_battery">Настройки батареи</string>
     <string name="settings_battery_hint">Если напоминания приходят с опозданием, разрешите приложению работать в фоне и отключите для него оптимизацию батареи.</string>

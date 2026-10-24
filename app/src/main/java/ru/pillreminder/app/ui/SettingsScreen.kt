@@ -66,10 +66,9 @@ fun SettingsScreen(vm: MainViewModel) {
     var theme by remember { mutableIntStateOf(prefs.themeMode) }
     var lang by remember { mutableStateOf(currentLangTag()) }
     var hideLock by remember { mutableStateOf(prefs.hideOnLockScreen) }
-    var snooze by remember { mutableIntStateOf(prefs.snoozeMinutes) }
     var repeat by remember { mutableIntStateOf(prefs.repeatMinutes) }
     val setRepeat = { v: Int ->
-        val c = v.coerceIn(0, 60)
+        val c = v.coerceIn(0, 180)
         repeat = c
         prefs.repeatMinutes = c
     }
@@ -162,16 +161,6 @@ fun SettingsScreen(vm: MainViewModel) {
                 }
                 Switch(checked = hideLock, onCheckedChange = { hideLock = it; prefs.hideOnLockScreen = it })
             }
-            Text(stringResource(R.string.settings_snooze))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(5, 10, 15, 30).forEach { m ->
-                    FilterChip(
-                        selected = snooze == m,
-                        onClick = { snooze = m; prefs.snoozeMinutes = m },
-                        label = { Text(stringResource(R.string.minutes_short, m)) },
-                    )
-                }
-            }
             // Повтор напоминания, если уведомление смахнули, а приём не отмечен
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.settings_repeat), Modifier.weight(1f))
@@ -186,11 +175,11 @@ fun SettingsScreen(vm: MainViewModel) {
                 Slider(
                     value = repeat.toFloat(),
                     onValueChange = { setRepeat(it.roundToInt()) },
-                    valueRange = 0f..60f,
-                    steps = 59,
+                    valueRange = 0f..180f,
+                    steps = 179,
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                 )
-                FilledTonalIconButton(onClick = { setRepeat(repeat + 1) }, enabled = repeat < 60) { Text("+") }
+                FilledTonalIconButton(onClick = { setRepeat(repeat + 1) }, enabled = repeat < 180) { Text("+") }
             }
             Text(
                 stringResource(R.string.settings_repeat_hint),
