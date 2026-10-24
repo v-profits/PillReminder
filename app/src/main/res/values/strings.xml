@@ -97,6 +97,9 @@
     <string name="settings_hide_lock_hint">The notification will only say it\'s time to take a medication</string>
     <string name="settings_snooze">Snooze for</string>
     <string name="minutes_short">%d min</string>
+    <string name="settings_repeat">Repeat if not marked</string>
+    <string name="settings_repeat_off">Off</string>
+    <string name="settings_repeat_hint">If you swipe the notification away without marking the dose, it comes back after the chosen time. Repeats stop 2 hours after the dose time. 0 means no repeat.</string>
     <string name="settings_test_notification">Test notification</string>
     <string name="settings_battery">Battery settings</string>
     <string name="settings_battery_hint">If reminders arrive late, allow the app to run in the background and disable battery optimization for it.</string>
@@ -117,6 +120,7 @@
     <string name="voice_stop">Stop voice input</string>
     <string name="voice_permission_denied">Microphone access is needed for voice input</string>
     <string name="voice_error">Could not recognize speech</string>
+    <string name="field_clear">Clear field</string>
 
     <string name="channel_doses">Medication reminders</string>
     <string name="channel_doses_desc">Time-to-take notifications</string>

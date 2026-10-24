@@ -19,6 +19,11 @@ class Prefs(context: Context) {
         get() = sp.getInt("snooze", 10)
         set(v) = sp.edit { putInt("snooze", v) }
 
+    /** Через сколько минут повторить напоминание, если уведомление смахнули, а приём не отмечен (0 — не повторять). */
+    var repeatMinutes: Int
+        get() = sp.getInt("repeat", 10)
+        set(v) = sp.edit { putInt("repeat", v) }
+
     var lastNotified: Long
         get() = sp.getLong("last_notified", 0L)
         set(v) = sp.edit { putLong("last_notified", v) }

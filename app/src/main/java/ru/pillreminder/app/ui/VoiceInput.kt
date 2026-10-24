@@ -14,8 +14,10 @@ import android.speech.SpeechRecognizer
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,7 +48,8 @@ import java.util.Locale
  *
  * Использует системный SpeechRecognizer (без собственного диалога), на время распознавания
  * приглушает звуковые сигналы начала/конца записи и потом возвращает громкость обратно.
- * Каждый новый результат ЗАМЕНЯЕТ текущее значение поля, а не дописывается к нему.
+ * В текстовых полях речь ДОПИСЫВАЕТСЯ к уже введённому (первая буква и буква после . ! ? — заглавные);
+ * в числовых полях значение заменяется. Очистить поле можно крестиком.
  */
 @Stable
 class VoiceController internal constructor(
@@ -244,7 +248,7 @@ fun rememberVoiceController(): VoiceController {
 }
 
 /**
- * Поле ввода с кнопкой микрофона. Распознанный текст заменяет текущее значение.
+ * Поле ввода с кнопкой микрофона и крестиком очистки. Распознанный текст дописывается к текущему.
  * Для числовых полей ([numeric]) из речи извлекается число («двадцать пять» → 25).
  */
 @Composable
@@ -271,37 +275,64 @@ fun VoiceTextField(
         supportingText = supportingText,
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
-        trailingIcon = if (voice.available) {
+        trailingIcon = if (voice.available || value.isNotEmpty()) {
             {
-                val active = voice.activeId == id
-                IconButton(
-                    onClick = {
-                        voice.toggle(id) { raw ->
-                            val text = if (numeric) {
-                                parseSpokenNumber(raw)?.toString()?.take(maxDigits)
-                            } else {
-                                raw.trim().replaceFirstChar { it.uppercase() }
-                            }
-                            if (!text.isNullOrEmpty()) onValueChange(text)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Крестик появляется, когда в поле что-то есть
+                    if (value.isNotEmpty()) {
+                        IconButton(onClick = {
+                            if (voice.activeId == id) voice.cancel()
+                            onValueChange("")
+                        }) {
+                            Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.field_clear))
                         }
-                    },
-                    colors = if (active) {
-                        IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
-                    } else {
-                        IconButtonDefaults.iconButtonColors()
-                    },
-                ) {
-                    Icon(
-                        Icons.Filled.Mic,
-                        contentDescription = stringResource(if (active) R.string.voice_stop else R.string.voice_start),
-                    )
+                    }
+                    if (voice.available) {
+                        val active = voice.activeId == id
+                        IconButton(
+                            onClick = {
+                                // Текст в поле на момент нажатия: новая речь дописывается к нему
+                                val base = value
+                                voice.toggle(id) { raw ->
+                                    val text = if (numeric) {
+                                        parseSpokenNumber(raw)?.toString()?.take(maxDigits)
+                                    } else {
+                                        continueText(base, raw)
+                                    }
+                                    if (!text.isNullOrEmpty()) onValueChange(text)
+                                }
+                            },
+                            colors = if (active) {
+                                IconButtonDefaults.iconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )
+                            } else {
+                                IconButtonDefaults.iconButtonColors()
+                            },
+                        ) {
+                            Icon(
+                                Icons.Filled.Mic,
+                                contentDescription = stringResource(if (active) R.string.voice_stop else R.string.voice_start),
+                            )
+                        }
+                    }
                 }
             }
         } else null,
     )
+}
+
+private val SENTENCE_START = Regex("(^|[.!?]\\s+)(\\p{Ll})")
+
+/** Заглавная буква в начале текста и после «. ! ?». */
+internal fun capitalizeSentences(s: String): String =
+    SENTENCE_START.replace(s.trimStart()) { it.groupValues[1] + it.groupValues[2].uppercase() }
+
+/** Распознанная речь дописывается к уже введённому тексту [base]. */
+internal fun continueText(base: String, spoken: String): String {
+    val joined = if (base.isBlank()) spoken.trim() else base.trimEnd() + " " + spoken.trim()
+    return capitalizeSentences(joined)
 }
 
 private val NUMBER_WORDS: Map<String, Int> = mapOf(

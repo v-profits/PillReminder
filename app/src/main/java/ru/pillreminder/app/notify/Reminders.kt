@@ -104,8 +104,16 @@ object Reminders {
         rescheduleAll(ctx)
     }
 
-    fun scheduleSnooze(ctx: Context, medId: Long, at: Long) {
-        val minutes = Prefs(ctx).snoozeMinutes
+    fun scheduleSnooze(ctx: Context, medId: Long, at: Long) =
+        scheduleAfter(ctx, medId, at, Prefs(ctx).snoozeMinutes)
+
+    /** Уведомление смахнули, приём не отмечен: показать снова через интервал из настроек. */
+    fun scheduleRepeat(ctx: Context, medId: Long, at: Long) {
+        val minutes = Prefs(ctx).repeatMinutes
+        if (minutes > 0) scheduleAfter(ctx, medId, at, minutes)
+    }
+
+    private fun scheduleAfter(ctx: Context, medId: Long, at: Long, minutes: Int) {
         val i = Intent(ctx, AlarmReceiver::class.java)
             .setAction(ACTION_SNOOZE_FIRE)
             .setData(Uri.parse("pill://snooze/$medId/$at"))

@@ -99,6 +99,9 @@
     <string name="settings_hide_lock_hint">В уведомлении будет только сообщение, что пора принять лекарство</string>
     <string name="settings_snooze">Отложить на</string>
     <string name="minutes_short">%d мин</string>
+    <string name="settings_repeat">Повторять, если не отмечено</string>
+    <string name="settings_repeat_off">Выкл</string>
+    <string name="settings_repeat_hint">Если уведомление смахнули, а приём не отмечен, оно появится снова через выбранное время. Повторы прекращаются через 2 часа после времени приёма. 0 — не повторять.</string>
     <string name="settings_test_notification">Проверить уведомление</string>
     <string name="settings_battery">Настройки батареи</string>
     <string name="settings_battery_hint">Если напоминания приходят с опозданием, разрешите приложению работать в фоне и отключите для него оптимизацию батареи.</string>
@@ -119,6 +122,7 @@
     <string name="voice_stop">Остановить голосовой ввод</string>
     <string name="voice_permission_denied">Для голосового ввода нужен доступ к микрофону</string>
     <string name="voice_error">Не удалось распознать речь</string>
+    <string name="field_clear">Очистить поле</string>
 
     <string name="channel_doses">Напоминания о приёме</string>
     <string name="channel_doses_desc">Уведомления о времени приёма</string>

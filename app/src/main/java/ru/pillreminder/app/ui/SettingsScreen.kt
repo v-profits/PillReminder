@@ -23,7 +23,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Slider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -49,6 +51,7 @@ import ru.pillreminder.app.R
 import ru.pillreminder.app.data.Prefs
 import ru.pillreminder.app.notify.Notifier
 import ru.pillreminder.app.notify.Reminders
+import kotlin.math.roundToInt
 
 private fun currentLangTag(): String =
     AppCompatDelegate.getApplicationLocales().get(0)?.language.orEmpty().let { if (it == "ru" || it == "en") it else "" }
@@ -64,6 +67,12 @@ fun SettingsScreen(vm: MainViewModel) {
     var lang by remember { mutableStateOf(currentLangTag()) }
     var hideLock by remember { mutableStateOf(prefs.hideOnLockScreen) }
     var snooze by remember { mutableIntStateOf(prefs.snoozeMinutes) }
+    var repeat by remember { mutableIntStateOf(prefs.repeatMinutes) }
+    val setRepeat = { v: Int ->
+        val c = v.coerceIn(0, 60)
+        repeat = c
+        prefs.repeatMinutes = c
+    }
     var confirmClearJournal by remember { mutableStateOf(false) }
     var confirmDeleteAll by remember { mutableStateOf(false) }
 
@@ -163,6 +172,31 @@ fun SettingsScreen(vm: MainViewModel) {
                     )
                 }
             }
+            // Повтор напоминания, если уведомление смахнули, а приём не отмечен
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.settings_repeat), Modifier.weight(1f))
+                Text(
+                    if (repeat == 0) stringResource(R.string.settings_repeat_off) else stringResource(R.string.minutes_short, repeat),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FilledTonalIconButton(onClick = { setRepeat(repeat - 1) }, enabled = repeat > 0) { Text("−") }
+                Slider(
+                    value = repeat.toFloat(),
+                    onValueChange = { setRepeat(it.roundToInt()) },
+                    valueRange = 0f..60f,
+                    steps = 59,
+                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                )
+                FilledTonalIconButton(onClick = { setRepeat(repeat + 1) }, enabled = repeat < 60) { Text("+") }
+            }
+            Text(
+                stringResource(R.string.settings_repeat_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { Notifier.showTest(ctx) }) { Text(stringResource(R.string.settings_test_notification)) }
                 OutlinedButton(onClick = {

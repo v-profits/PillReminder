@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ru.pillreminder.app.data.AppDatabase
 import ru.pillreminder.app.data.Intake
 import ru.pillreminder.app.data.IntakeStatus
+import ru.pillreminder.app.data.MISSED_AFTER_MIN
 
 private fun BroadcastReceiver.async(block: suspend () -> Unit) {
     val pending = goAsync()
@@ -31,7 +32,12 @@ class AlarmReceiver : BroadcastReceiver() {
                 val at = intent.getLongExtra(Notifier.EXTRA_AT, -1)
                 val db = AppDatabase.get(app)
                 val med = db.meds().get(medId)
-                if (med != null && db.logs().find(medId, at) == null) Notifier.showDose(app, med, at)
+                if (System.currentTimeMillis() - at > MISSED_AFTER_MIN * 60_000L) {
+                    // Окно приёма закрыто: больше не напоминаем, отмечаем как «не отмечено»
+                    Reminders.refresh(app)
+                } else if (med != null && db.logs().find(medId, at) == null) {
+                    Notifier.showDose(app, med, at)
+                }
             } else {
                 Reminders.refresh(app)
             }
@@ -50,6 +56,10 @@ class ActionReceiver : BroadcastReceiver() {
             when (intent.action) {
                 Notifier.ACTION_TAKEN -> Intake.mark(app, medId, at, IntakeStatus.TAKEN)
                 Notifier.ACTION_SKIP -> Intake.mark(app, medId, at, IntakeStatus.SKIPPED)
+                Notifier.ACTION_DISMISSED -> {
+                    // Уведомление смахнули, а приём не отмечен — напомнить ещё раз
+                    if (AppDatabase.get(app).logs().find(medId, at) == null) Reminders.scheduleRepeat(app, medId, at)
+                }
                 Notifier.ACTION_SNOOZE -> {
                     Notifier.cancelDose(app, medId, at)
                     Reminders.scheduleSnooze(app, medId, at)
