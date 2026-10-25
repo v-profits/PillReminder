@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,6 +79,8 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     var threshold by rememberSaveable { mutableStateOf("5") }
     var loaded by rememberSaveable { mutableStateOf(id == 0L) }
     var showTime by remember { mutableStateOf(false) }
+    // Время, которое меняем (null — добавляем новое)
+    var pickerOriginal by remember { mutableStateOf<LocalTime?>(null) }
     var confirmDelete by remember { mutableStateOf(false) }
     var showDiscard by remember { mutableStateOf(false) }
     val locale = currentLocale()
@@ -164,11 +169,13 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 OutlinedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                time.format(TimeFmt),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.weight(1f),
-                            )
+                            // Нажатие на время открывает выбор другого времени для этого приёма
+                            TextButton(onClick = { pickerOriginal = time; showTime = true }) {
+                                Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(time.format(TimeFmt), style = MaterialTheme.typography.titleMedium)
+                            }
+                            Spacer(Modifier.weight(1f))
                             Text(
                                 formatAmount(ctx, q),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -197,7 +204,7 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                     }
                 }
             }
-            OutlinedButton(onClick = { showTime = true }) { Text(stringResource(R.string.time_add)) }
+            OutlinedButton(onClick = { pickerOriginal = null; showTime = true }) { Text(stringResource(R.string.time_add)) }
 
             Text(stringResource(R.string.field_days), style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -266,16 +273,22 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     }
 
     if (showTime) {
-        val state = rememberTimePickerState(8, 0, is24Hour = true)
+        val state = rememberTimePickerState(pickerOriginal?.hour ?: 8, pickerOriginal?.minute ?: 0, is24Hour = true)
         AlertDialog(
             onDismissRequest = { showTime = false },
             confirmButton = {
                 TextButton(onClick = {
                     val t = LocalTime.of(state.hour, state.minute)
-                    if (sched.none { it.first == t }) {
-                        // Новое время по умолчанию получает то же количество, что и последнее добавленное
-                        val q = sched.lastOrNull()?.second ?: 4
-                        timesCsv = encodeSchedule(sched + (t to q))
+                    val original = pickerOriginal
+                    if (original == null) {
+                        if (sched.none { it.first == t }) {
+                            // Новое время по умолчанию получает то же количество, что и последнее добавленное
+                            val q = sched.lastOrNull()?.second ?: 4
+                            timesCsv = encodeSchedule(sched + (t to q))
+                        }
+                    } else if (t == original || sched.none { it.first == t }) {
+                        // Меняем время приёма, количество сохраняется
+                        timesCsv = encodeSchedule(sched.map { if (it.first == original) t to it.second else it })
                     }
                     showTime = false
                 }) { Text(stringResource(R.string.ok)) }
