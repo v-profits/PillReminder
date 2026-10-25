@@ -217,6 +217,12 @@ fun SettingsScreen(vm: MainViewModel) {
             // --- О приложении ---
             SectionTitle(R.string.settings_about)
             Text(stringResource(R.string.disclaimer_text), style = MaterialTheme.typography.bodyMedium)
+            TextButton(onClick = {
+                try {
+                    ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ctx.getString(R.string.privacy_url))))
+                } catch (_: android.content.ActivityNotFoundException) {
+                }
+            }) { Text(stringResource(R.string.settings_privacy)) }
             Text(
                 stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodySmall,

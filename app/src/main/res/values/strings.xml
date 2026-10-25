@@ -139,4 +139,6 @@
     <string name="rating_mail_subject">%1$s: feedback (%2$d of 5)</string>
     <string name="rating_no_mail">No mail app found. Please write to %s</string>
     <string name="feedback_email" translatable="false">vl.profits@gmail.com</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="privacy_url" translatable="false">https://v-profits.github.io/pillreminder-privacy/</string>
 </resources>
