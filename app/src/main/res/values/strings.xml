@@ -129,4 +129,14 @@
     <string name="notif_low_stock_text">%1$s: %2$s left. Time to refill.</string>
     <string name="notif_test_title">Test notification</string>
     <string name="notif_test_text">Reminders are working.</string>
+
+    <string name="rating_title">Enjoying the app?</string>
+    <string name="rating_text">Please rate it: your feedback helps make the app better.</string>
+    <string name="rating_stars_cd">Rating %d of 5</string>
+    <string name="rating_send">Send</string>
+    <string name="rating_later">Later</string>
+    <string name="rating_thanks">Thanks for your rating!</string>
+    <string name="rating_mail_subject">%1$s: feedback (%2$d of 5)</string>
+    <string name="rating_no_mail">No mail app found. Please write to %s</string>
+    <string name="feedback_email" translatable="false">feedback@example.com</string>
 </resources>

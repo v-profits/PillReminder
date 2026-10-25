@@ -131,4 +131,13 @@
     <string name="notif_low_stock_text">%1$s: осталось %2$s. Пора пополнить запас.</string>
     <string name="notif_test_title">Проверка уведомления</string>
     <string name="notif_test_text">Напоминания работают.</string>
+
+    <string name="rating_title">Нравится приложение?</string>
+    <string name="rating_text">Поставьте оценку: это поможет сделать приложение лучше.</string>
+    <string name="rating_stars_cd">Оценка %d из 5</string>
+    <string name="rating_send">Отправить</string>
+    <string name="rating_later">Позже</string>
+    <string name="rating_thanks">Спасибо за оценку!</string>
+    <string name="rating_mail_subject">%1$s: отзыв (оценка %2$d из 5)</string>
+    <string name="rating_no_mail">Не найдено почтовое приложение. Напишите нам на %s</string>
 </resources>

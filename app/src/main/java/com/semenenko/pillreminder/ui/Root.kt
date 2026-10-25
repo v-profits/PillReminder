@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -54,6 +55,9 @@ fun PillRoot(vm: MainViewModel) {
     val prefs = remember { Prefs(ctx) }
     var showDisclaimer by remember { mutableStateOf(!prefs.disclaimerAccepted) }
 
+    // Окно оценки: решаем один раз при открытии приложения, переживает поворот экрана
+    var showRating by rememberSaveable { mutableStateOf(!showDisclaimer && prefs.ratingDue()) }
+
     val notifPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     if (showDisclaimer) {
@@ -76,6 +80,13 @@ fun PillRoot(vm: MainViewModel) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
+
+    if (showRating && !showDisclaimer && route == "today") {
+        RatingDialog(
+            onDismiss = { showRating = false },
+            onRated = { prefs.ratingDone = true; showRating = false },
+        )
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
