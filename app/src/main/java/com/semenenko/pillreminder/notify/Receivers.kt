@@ -1,4 +1,4 @@
-package ru.pillreminder.app.notify
+package com.semenenko.pillreminder.notify
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -6,9 +6,9 @@ import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.pillreminder.app.data.AppDatabase
-import ru.pillreminder.app.data.Intake
-import ru.pillreminder.app.data.IntakeStatus
+import com.semenenko.pillreminder.data.AppDatabase
+import com.semenenko.pillreminder.data.Intake
+import com.semenenko.pillreminder.data.IntakeStatus
 
 /** Максимум часов после времени приёма, пока неотмеченный приём продолжает напоминать. */
 private const val REPEAT_MAX_HOURS = 12L

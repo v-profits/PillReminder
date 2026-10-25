@@ -1,4 +1,4 @@
-package ru.pillreminder.app
+package com.semenenko.pillreminder
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.pillreminder.app.data.AppDatabase
-import ru.pillreminder.app.data.Intake
-import ru.pillreminder.app.data.IntakeLog
-import ru.pillreminder.app.data.IntakeStatus
-import ru.pillreminder.app.data.Medication
-import ru.pillreminder.app.data.Prefs
-import ru.pillreminder.app.notify.Reminders
+import com.semenenko.pillreminder.data.AppDatabase
+import com.semenenko.pillreminder.data.Intake
+import com.semenenko.pillreminder.data.IntakeLog
+import com.semenenko.pillreminder.data.IntakeStatus
+import com.semenenko.pillreminder.data.Medication
+import com.semenenko.pillreminder.data.Prefs
+import com.semenenko.pillreminder.notify.Reminders
 
 class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     private val db = AppDatabase.get(app)

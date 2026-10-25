@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import android.Manifest
 import android.content.Intent
@@ -45,12 +45,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
-import ru.pillreminder.app.BuildConfig
-import ru.pillreminder.app.MainViewModel
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.Prefs
-import ru.pillreminder.app.notify.Notifier
-import ru.pillreminder.app.notify.Reminders
+import com.semenenko.pillreminder.BuildConfig
+import com.semenenko.pillreminder.MainViewModel
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.Prefs
+import com.semenenko.pillreminder.notify.Notifier
+import com.semenenko.pillreminder.notify.Reminders
 import kotlin.math.roundToInt
 
 private fun currentLangTag(): String =

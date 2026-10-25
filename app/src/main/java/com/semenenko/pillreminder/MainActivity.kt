@@ -1,12 +1,12 @@
-package ru.pillreminder.app
+package com.semenenko.pillreminder
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import ru.pillreminder.app.ui.PillRoot
-import ru.pillreminder.app.ui.PillTheme
+import com.semenenko.pillreminder.ui.PillRoot
+import com.semenenko.pillreminder.ui.PillTheme
 
 class MainActivity : AppCompatActivity() {
     private val vm: MainViewModel by viewModels()

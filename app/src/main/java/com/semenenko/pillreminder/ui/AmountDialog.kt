@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,9 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.formatAmount
-import ru.pillreminder.app.data.quartersGlyph
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.formatAmount
+import com.semenenko.pillreminder.data.quartersGlyph
 
 /**
  * Диалог «Сколько принято?»: показывается только когда пользователь сам открыл его

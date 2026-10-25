@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import android.Manifest
 import android.os.Build
@@ -34,10 +34,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import ru.pillreminder.app.MainViewModel
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.Prefs
-import ru.pillreminder.app.notify.Notifier
+import com.semenenko.pillreminder.MainViewModel
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.Prefs
+import com.semenenko.pillreminder.notify.Notifier
 
 private data class Tab(val route: String, val label: Int, val icon: ImageVector)
 

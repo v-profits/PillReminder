@@ -1,7 +1,7 @@
-package ru.pillreminder.app.data
+package com.semenenko.pillreminder.data
 
 import android.content.Context
-import ru.pillreminder.app.notify.Notifier
+import com.semenenko.pillreminder.notify.Notifier
 
 /** Отметка приёма: используется и экранами, и кнопками в уведомлениях. */
 object Intake {

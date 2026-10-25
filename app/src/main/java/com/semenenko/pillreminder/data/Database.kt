@@ -1,4 +1,4 @@
-package ru.pillreminder.app.data
+package com.semenenko.pillreminder.data
 
 import android.content.Context
 import androidx.room.Dao

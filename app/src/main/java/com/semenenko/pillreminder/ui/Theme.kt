@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -29,7 +29,7 @@ Android-приложение на Kotlin + Jetpack Compose. Только нап�
 
 ## Перед публикацией
 
-- Смените `applicationId` и `namespace` в `app/build.gradle.kts` (сейчас `ru.pillreminder.app`) на свой уникальный. Заодно переименуйте пакет в Studio (**Refactor → Rename**).
+- Смените `applicationId` и `namespace` в `app/build.gradle.kts` (сейчас `com.semenenko.pillreminder`). Если меняете, переименуйте и пакет в Studio (**Refactor → Rename**).
 - Название приложения: `app/src/main/res/values*/strings.xml` → `app_name`.
 - Поднимайте `versionCode` при каждой загрузке новой версии.
 
@@ -53,7 +53,7 @@ Android-приложение на Kotlin + Jetpack Compose. Только нап�
 ## Структура
 
 ```
-app/src/main/java/ru/pillreminder/app/
+app/src/main/java/com/semenenko/pillreminder/
   data/      Room-модели, DAO, расписание (Models.kt), отметки приёмов (Intake.kt), настройки
   notify/    уведомления, будильники (Reminders.kt), приёмники (Receivers.kt)
   ui/        экраны Compose: Сегодня, Лекарства, Журнал, Настройки, Редактор

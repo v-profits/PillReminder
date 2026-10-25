@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import android.app.Activity
 import android.content.Context
@@ -26,8 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.Prefs
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.Prefs
 import java.util.Locale
 
 /**

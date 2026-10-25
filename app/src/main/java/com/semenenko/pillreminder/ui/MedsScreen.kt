@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +30,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.pillreminder.app.MainViewModel
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.Medication
-import ru.pillreminder.app.data.formatAmount
-import ru.pillreminder.app.data.quartersGlyph
+import com.semenenko.pillreminder.MainViewModel
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.Medication
+import com.semenenko.pillreminder.data.formatAmount
+import com.semenenko.pillreminder.data.quartersGlyph
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

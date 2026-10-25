@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import android.content.Context
 import android.content.Intent
@@ -13,12 +13,12 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.IntakeLog
-import ru.pillreminder.app.data.IntakeStatus
-import ru.pillreminder.app.data.formatAmount
-import ru.pillreminder.app.data.Medication
-import ru.pillreminder.app.data.millisToLdt
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.IntakeLog
+import com.semenenko.pillreminder.data.IntakeStatus
+import com.semenenko.pillreminder.data.formatAmount
+import com.semenenko.pillreminder.data.Medication
+import com.semenenko.pillreminder.data.millisToLdt
 import java.io.File
 import java.time.DayOfWeek
 import java.time.format.DateTimeFormatter

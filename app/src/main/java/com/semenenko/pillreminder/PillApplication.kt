@@ -1,10 +1,10 @@
-package ru.pillreminder.app
+package com.semenenko.pillreminder
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import ru.pillreminder.app.data.Prefs
-import ru.pillreminder.app.notify.Notifier
-import ru.pillreminder.app.ui.VoiceController
+import com.semenenko.pillreminder.data.Prefs
+import com.semenenko.pillreminder.notify.Notifier
+import com.semenenko.pillreminder.ui.VoiceController
 
 class PillApplication : Application() {
     override fun onCreate() {

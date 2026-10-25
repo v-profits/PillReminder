@@ -1,4 +1,4 @@
-package ru.pillreminder.app.notify
+package com.semenenko.pillreminder.notify
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,12 +14,12 @@ import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import ru.pillreminder.app.MainActivity
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.Medication
-import ru.pillreminder.app.data.formatAmount
-import ru.pillreminder.app.data.millisToLdt
-import ru.pillreminder.app.data.Prefs
+import com.semenenko.pillreminder.MainActivity
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.Medication
+import com.semenenko.pillreminder.data.formatAmount
+import com.semenenko.pillreminder.data.millisToLdt
+import com.semenenko.pillreminder.data.Prefs
 import java.util.Date
 import java.util.Objects
 
@@ -27,9 +27,9 @@ object Notifier {
     const val CH_DOSE = "doses"
     const val CH_STOCK = "stock"
 
-    const val ACTION_TAKEN = "ru.pillreminder.app.ACTION_TAKEN"
-    const val ACTION_SKIP = "ru.pillreminder.app.ACTION_SKIP"
-    const val ACTION_DISMISSED = "ru.pillreminder.app.ACTION_DISMISSED"
+    const val ACTION_TAKEN = "com.semenenko.pillreminder.ACTION_TAKEN"
+    const val ACTION_SKIP = "com.semenenko.pillreminder.ACTION_SKIP"
+    const val ACTION_DISMISSED = "com.semenenko.pillreminder.ACTION_DISMISSED"
     const val EXTRA_MED = "med_id"
     const val EXTRA_AT = "scheduled_at"
 

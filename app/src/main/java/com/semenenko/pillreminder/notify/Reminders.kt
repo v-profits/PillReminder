@@ -1,4 +1,4 @@
-package ru.pillreminder.app.notify
+package com.semenenko.pillreminder.notify
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -6,20 +6,20 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import ru.pillreminder.app.data.AppDatabase
-import ru.pillreminder.app.data.IntakeLog
-import ru.pillreminder.app.data.IntakeStatus
-import ru.pillreminder.app.data.MISSED_AFTER_MIN
-import ru.pillreminder.app.data.Prefs
-import ru.pillreminder.app.data.dosesBetween
-import ru.pillreminder.app.data.millisToLdt
-import ru.pillreminder.app.data.nextAfter
-import ru.pillreminder.app.data.toMillis
+import com.semenenko.pillreminder.data.AppDatabase
+import com.semenenko.pillreminder.data.IntakeLog
+import com.semenenko.pillreminder.data.IntakeStatus
+import com.semenenko.pillreminder.data.MISSED_AFTER_MIN
+import com.semenenko.pillreminder.data.Prefs
+import com.semenenko.pillreminder.data.dosesBetween
+import com.semenenko.pillreminder.data.millisToLdt
+import com.semenenko.pillreminder.data.nextAfter
+import com.semenenko.pillreminder.data.toMillis
 import java.time.LocalDateTime
 
 object Reminders {
-    const val ACTION_DOSE_DUE = "ru.pillreminder.app.DOSE_DUE"
-    const val ACTION_SNOOZE_FIRE = "ru.pillreminder.app.SNOOZE_FIRE"
+    const val ACTION_DOSE_DUE = "com.semenenko.pillreminder.DOSE_DUE"
+    const val ACTION_SNOOZE_FIRE = "com.semenenko.pillreminder.SNOOZE_FIRE"
     private const val REQ_NEXT = 1
 
     private fun alarmManager(ctx: Context) = ctx.getSystemService(AlarmManager::class.java)

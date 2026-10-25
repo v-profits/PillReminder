@@ -1,7 +1,7 @@
-package ru.pillreminder.app.data
+package com.semenenko.pillreminder.data
 
 import android.content.Context
-import ru.pillreminder.app.R
+import com.semenenko.pillreminder.R
 
 /*
  * Количества хранятся в ЧЕТВЕРТЯХ таблетки (целые числа, без ошибок округления):

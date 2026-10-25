@@ -14,11 +14,11 @@ val keystoreProps = Properties().apply {
 }
 
 android {
-    namespace = "ru.pillreminder.app"
+    namespace = "com.semenenko.pillreminder"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "ru.pillreminder.app"
+        applicationId = "com.semenenko.pillreminder"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

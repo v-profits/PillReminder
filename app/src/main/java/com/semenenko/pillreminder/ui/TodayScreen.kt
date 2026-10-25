@@ -1,4 +1,4 @@
-package ru.pillreminder.app.ui
+package com.semenenko.pillreminder.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,16 +39,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
-import ru.pillreminder.app.MainViewModel
-import ru.pillreminder.app.R
-import ru.pillreminder.app.data.IntakeLog
-import ru.pillreminder.app.data.IntakeStatus
-import ru.pillreminder.app.data.MISSED_AFTER_MIN
-import ru.pillreminder.app.data.Medication
-import ru.pillreminder.app.data.formatAmount
-import ru.pillreminder.app.data.millisToLdt
-import ru.pillreminder.app.data.occurrencesOn
-import ru.pillreminder.app.data.toMillis
+import com.semenenko.pillreminder.MainViewModel
+import com.semenenko.pillreminder.R
+import com.semenenko.pillreminder.data.IntakeLog
+import com.semenenko.pillreminder.data.IntakeStatus
+import com.semenenko.pillreminder.data.MISSED_AFTER_MIN
+import com.semenenko.pillreminder.data.Medication
+import com.semenenko.pillreminder.data.formatAmount
+import com.semenenko.pillreminder.data.millisToLdt
+import com.semenenko.pillreminder.data.occurrencesOn
+import com.semenenko.pillreminder.data.toMillis
 import java.time.LocalDate
 import java.time.LocalDateTime
 
