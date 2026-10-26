@@ -1,6 +1,7 @@
 package com.semenenko.pillreminder.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -47,7 +48,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -86,6 +90,8 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
     val locale = currentLocale()
     val voice = rememberVoiceController()
     val ctx = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
 
     // Снимок полей: по нему определяем, есть ли несохранённые изменения
     fun snapshot() = listOf(name, dosage, notes, timesCsv, daysMask, courseDays, stock, threshold).joinToString("\u0001")
@@ -142,6 +148,13 @@ fun EditMedScreen(vm: MainViewModel, id: Long, onClose: () -> Unit) {
                 .consumeWindowInsets(padding)
                 .imePadding()
                 .verticalScroll(rememberScrollState())
+                // Нажатие на свободное место убирает курсор и закрывает клавиатуру
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                        keyboard?.hide()
+                    })
+                }
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
