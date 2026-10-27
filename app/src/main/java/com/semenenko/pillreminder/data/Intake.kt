@@ -79,6 +79,11 @@ object Intake {
         db.logs().delete(log)
         if (log.status == IntakeStatus.TAKEN) db.meds().incrementStock(log.medicationId, log.doseQuarters)
         Notifier.cancelDose(ctx, log.medicationId, log.scheduledAt)
+        // Отметку отменили, а время приёма сегодня уже прошло — напоминаем снова
+        val scheduled = millisToLdt(log.scheduledAt)
+        if (scheduled.toLocalDate() == java.time.LocalDate.now() && !scheduled.isAfter(java.time.LocalDateTime.now())) {
+            db.meds().get(log.medicationId)?.takeIf { it.active }?.let { Notifier.showDose(ctx, it, log.scheduledAt) }
+        }
     }
 
     /** Списать [quarters] четвертей с остатка и, если запас на исходе, показать уведомление. */

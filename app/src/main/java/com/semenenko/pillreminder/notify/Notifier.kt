@@ -82,6 +82,7 @@ object Notifier {
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
             .setWhen(at)
             .setContentIntent(openAppIntent(ctx, id))
             .setDeleteIntent(actionIntent(ctx, ACTION_DISMISSED, med.id, at))

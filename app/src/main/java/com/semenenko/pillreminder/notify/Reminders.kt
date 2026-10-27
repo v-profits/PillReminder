@@ -98,9 +98,28 @@ object Reminders {
         prefs.lastMissedCheck = upper.toMillis()
     }
 
-    suspend fun refresh(ctx: Context) {
+    /**
+     * Сегодняшние приёмы, время которых уже прошло, а приём не отмечен (или отметка отменена):
+     * уведомление показывается снова. Уже висящее в шторке уведомление просто обновляется без звука.
+     */
+    suspend fun showOverdueToday(ctx: Context) {
+        val db = AppDatabase.get(ctx)
+        val now = LocalDateTime.now()
+        val dayStart = now.toLocalDate().atStartOfDay().minusSeconds(1)
+        for (d in dosesBetween(db.meds().getActive(), dayStart, now)) {
+            val log = db.logs().find(d.med.id, d.millis)
+            if (log == null || log.status == IntakeStatus.MISSED) Notifier.showDose(ctx, d.med, d.millis)
+        }
+    }
+
+    /**
+     * @param reshowOverdue показать снова неотмеченные приёмы за сегодня: после обновления приложения,
+     * перезагрузки, добавления или изменения лекарства.
+     */
+    suspend fun refresh(ctx: Context, reshowOverdue: Boolean = false) {
         processDue(ctx)
         markMissed(ctx)
+        if (reshowOverdue) showOverdueToday(ctx)
         rescheduleAll(ctx)
     }
 

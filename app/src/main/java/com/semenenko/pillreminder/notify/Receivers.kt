@@ -74,6 +74,6 @@ class ActionReceiver : BroadcastReceiver() {
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val app = context.applicationContext
-        async { Reminders.refresh(app) }
+        async { Reminders.refresh(app, reshowOverdue = true) }
     }
 }

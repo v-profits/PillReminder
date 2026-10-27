@@ -14,6 +14,7 @@ import com.semenenko.pillreminder.data.IntakeLog
 import com.semenenko.pillreminder.data.IntakeStatus
 import com.semenenko.pillreminder.data.Medication
 import com.semenenko.pillreminder.data.Prefs
+import com.semenenko.pillreminder.data.toMillis
 import com.semenenko.pillreminder.notify.Reminders
 
 class MainViewModel(private val app: Application) : AndroidViewModel(app) {
@@ -46,9 +47,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     fun saveMed(med: Medication, scheduleChanged: Boolean, onDone: () -> Unit) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val m = if (scheduleChanged) med.copy(effectiveFrom = System.currentTimeMillis()) else med
+                // Расписание действует с начала сегодняшнего дня: прошедшее сегодня время без отметки напомнит о себе
+                val m = if (scheduleChanged) {
+                    med.copy(effectiveFrom = java.time.LocalDate.now().atStartOfDay().toMillis())
+                } else med
                 if (m.id == 0L) db.meds().insert(m) else db.meds().update(m)
-                Reminders.refresh(app)
+                Reminders.refresh(app, reshowOverdue = true)
             }
             onDone()
         }
