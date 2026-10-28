@@ -61,6 +61,9 @@ interface LogDao {
     @Delete
     suspend fun delete(log: IntakeLog)
 
+    @Query("DELETE FROM intake_log WHERE scheduledAt < :before")
+    suspend fun deleteBefore(before: Long)
+
     @Query("DELETE FROM intake_log")
     suspend fun clear()
 }

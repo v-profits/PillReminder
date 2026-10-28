@@ -13,13 +13,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,6 +60,8 @@ fun JournalScreen(vm: MainViewModel) {
     val ctx = LocalContext.current
     val all by vm.logs.collectAsStateWithLifecycle()
     var period by rememberSaveable { mutableIntStateOf(7) } // 7, 30, 0 = всё
+    var confirmClear by remember { mutableStateOf(false) }
+    val todayStart = LocalDate.now().atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
     val locale = currentLocale()
 
     val cutoff = if (period == 0) 0L else LocalDate.now().minusDays(period - 1L).atStartOfDay()
@@ -73,6 +80,11 @@ fun JournalScreen(vm: MainViewModel) {
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.tab_journal)) },
                 actions = {
+                    if (all.any { it.scheduledAt < todayStart }) {
+                        IconButton(onClick = { confirmClear = true }) {
+                            Icon(Icons.Filled.DeleteSweep, contentDescription = stringResource(R.string.journal_clear))
+                        }
+                    }
                     if (logs.isNotEmpty()) {
                         IconButton(onClick = { shareJournalCsv(ctx, logs) }) {
                             Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.journal_export))
@@ -88,9 +100,16 @@ fun JournalScreen(vm: MainViewModel) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(7 to R.string.period_7, 30 to R.string.period_30, 0 to R.string.period_all).forEach { (p, label) ->
-                        FilterChip(selected = period == p, onClick = { period = p }, label = { Text(stringResource(label)) })
+                // Переключатель периода на всю ширину экрана
+                val periods = listOf(7 to R.string.period_7, 30 to R.string.period_30, 0 to R.string.period_all)
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    periods.forEachIndexed { i, (p, label) ->
+                        SegmentedButton(
+                            selected = period == p,
+                            onClick = { period = p },
+                            shape = SegmentedButtonDefaults.itemShape(index = i, count = periods.size),
+                            label = { Text(stringResource(label)) },
+                        )
                     }
                 }
             }
@@ -133,6 +152,18 @@ fun JournalScreen(vm: MainViewModel) {
                 items(entries, key = { it.id }) { log -> LogRow(log, vm) }
             }
         }
+    }
+
+    if (confirmClear) {
+        AlertDialog(
+            onDismissRequest = { confirmClear = false },
+            title = { Text(stringResource(R.string.journal_clear_title)) },
+            text = { Text(stringResource(R.string.journal_clear_text)) },
+            confirmButton = {
+                TextButton(onClick = { confirmClear = false; vm.clearJournalExceptToday() }) { Text(stringResource(R.string.delete)) }
+            },
+            dismissButton = { TextButton(onClick = { confirmClear = false }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
 }
 

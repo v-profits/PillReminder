@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -23,8 +24,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Slider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -108,43 +114,33 @@ fun SettingsScreen(vm: MainViewModel) {
                 }
             }
 
-            // --- Тема ---
-            SectionTitle(R.string.settings_theme)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(
+            // --- Тема и язык: всплывающие списки ---
+            DropdownSetting(
+                title = R.string.settings_theme,
+                options = listOf(
                     AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM to R.string.theme_system,
                     AppCompatDelegate.MODE_NIGHT_NO to R.string.theme_light,
                     AppCompatDelegate.MODE_NIGHT_YES to R.string.theme_dark,
-                ).forEach { (mode, label) ->
-                    FilterChip(
-                        selected = theme == mode,
-                        onClick = {
-                            theme = mode
-                            prefs.themeMode = mode
-                            AppCompatDelegate.setDefaultNightMode(mode)
-                        },
-                        label = { Text(stringResource(label)) },
+                ),
+                selected = theme,
+                onSelect = { mode ->
+                    theme = mode
+                    prefs.themeMode = mode
+                    AppCompatDelegate.setDefaultNightMode(mode)
+                },
+            )
+            DropdownSetting(
+                title = R.string.settings_language,
+                options = listOf("" to R.string.lang_system, "ru" to R.string.lang_ru, "en" to R.string.lang_en),
+                selected = lang,
+                onSelect = { tag ->
+                    lang = tag
+                    AppCompatDelegate.setApplicationLocales(
+                        if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList()
+                        else LocaleListCompat.forLanguageTags(tag),
                     )
-                }
-            }
-
-            // --- Язык ---
-            SectionTitle(R.string.settings_language)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("" to R.string.lang_system, "ru" to R.string.lang_ru, "en" to R.string.lang_en).forEach { (tag, label) ->
-                    FilterChip(
-                        selected = lang == tag,
-                        onClick = {
-                            lang = tag
-                            AppCompatDelegate.setApplicationLocales(
-                                if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList()
-                                else LocaleListCompat.forLanguageTags(tag),
-                            )
-                        },
-                        label = { Text(stringResource(label)) },
-                    )
-                }
-            }
+                },
+            )
 
             HorizontalDivider()
 
@@ -239,6 +235,31 @@ fun SettingsScreen(vm: MainViewModel) {
     if (confirmDeleteAll) {
         ConfirmDialog(R.string.settings_delete_all, R.string.settings_delete_all_text, { confirmDeleteAll = false }) {
             vm.deleteAllData()
+        }
+    }
+}
+
+/** Строка настройки: слева название, справа кнопка с текущим значением, по нажатию открывается список. */
+@Composable
+private fun <T> DropdownSetting(title: Int, options: List<Pair<T, Int>>, selected: T, onSelect: (T) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    val current = options.firstOrNull { it.first == selected }?.second ?: options.first().second
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(title), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+        Box {
+            OutlinedButton(onClick = { open = true }) {
+                Text(stringResource(current))
+                Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
+            }
+            DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                options.forEach { (value, label) ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(label)) },
+                        trailingIcon = { if (value == selected) Icon(Icons.Filled.Check, contentDescription = null) },
+                        onClick = { open = false; onSelect(value) },
+                    )
+                }
+            }
         }
     }
 }

@@ -141,4 +141,7 @@
     <string name="feedback_email" translatable="false">vl.profits@gmail.com</string>
     <string name="settings_privacy">Privacy policy</string>
     <string name="privacy_url" translatable="false">https://v-profits.github.io/pillreminder-privacy/</string>
+    <string name="journal_clear">Clear</string>
+    <string name="journal_clear_title">Clear journal?</string>
+    <string name="journal_clear_text">All entries except today\'s will be deleted. This cannot be undone.</string>
 </resources>

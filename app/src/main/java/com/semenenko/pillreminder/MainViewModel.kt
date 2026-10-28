@@ -75,6 +75,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Очистить журнал, кроме записей за сегодня. */
+    fun clearJournalExceptToday() {
+        val startOfToday = java.time.LocalDate.now().atStartOfDay().toMillis()
+        viewModelScope.launch(Dispatchers.IO) { db.logs().deleteBefore(startOfToday) }
+    }
+
     fun clearJournal() {
         viewModelScope.launch(Dispatchers.IO) { db.logs().clear() }
     }

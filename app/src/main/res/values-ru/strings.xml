@@ -141,4 +141,7 @@
     <string name="rating_mail_subject">%1$s: отзыв (оценка %2$d из 5)</string>
     <string name="rating_no_mail">Не найдено почтовое приложение. Напишите нам на %s</string>
     <string name="settings_privacy">Политика конфиденциальности</string>
+    <string name="journal_clear">Очистить</string>
+    <string name="journal_clear_title">Очистить журнал?</string>
+    <string name="journal_clear_text">Все записи, кроме сегодняшних, будут удалены. Это нельзя отменить.</string>
 </resources>
