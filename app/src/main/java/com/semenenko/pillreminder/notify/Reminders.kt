@@ -93,7 +93,8 @@ object Reminders {
                     doseQuarters = d.quarters,
                 ),
             )
-            Notifier.cancelDose(ctx, d.med.id, d.millis)
+            // Уведомление остаётся в шторке, пока приём не отмечен; убираем только по истечении 12 часов
+            if (System.currentTimeMillis() - d.millis > 12L * 3_600_000L) Notifier.cancelDose(ctx, d.med.id, d.millis)
         }
         prefs.lastMissedCheck = upper.toMillis()
     }
@@ -123,20 +124,30 @@ object Reminders {
         rescheduleAll(ctx)
     }
 
-    /** Уведомление смахнули, приём не отмечен: показать снова через интервал из настроек. */
+    /** Приём не отмечен: показать уведомление снова через интервал из настроек. */
     fun scheduleRepeat(ctx: Context, medId: Long, at: Long) {
         val minutes = Prefs(ctx).repeatMinutes
         if (minutes > 0) scheduleAfter(ctx, medId, at, minutes)
     }
 
-    private fun scheduleAfter(ctx: Context, medId: Long, at: Long, minutes: Int) {
+    private fun repeatIntent(ctx: Context, medId: Long, at: Long): PendingIntent {
         val i = Intent(ctx, AlarmReceiver::class.java)
             .setAction(ACTION_SNOOZE_FIRE)
             .setData(Uri.parse("pill://snooze/$medId/$at"))
             .putExtra(Notifier.EXTRA_MED, medId)
             .putExtra(Notifier.EXTRA_AT, at)
-        val pi = PendingIntent.getBroadcast(ctx, 0, i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        setAlarm(ctx, System.currentTimeMillis() + minutes * 60_000L, pi)
+        return PendingIntent.getBroadcast(ctx, 0, i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    private fun scheduleAfter(ctx: Context, medId: Long, at: Long, minutes: Int) {
+        setAlarm(ctx, System.currentTimeMillis() + minutes * 60_000L, repeatIntent(ctx, medId, at))
+    }
+
+    /** Приём отмечен (принят/пропущен) — повторов больше не будет. */
+    fun cancelRepeat(ctx: Context, medId: Long, at: Long) {
+        val pi = repeatIntent(ctx, medId, at)
+        alarmManager(ctx).cancel(pi)
+        pi.cancel()
     }
 
     fun cancelAll(ctx: Context) {

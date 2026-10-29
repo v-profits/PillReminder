@@ -2,6 +2,7 @@ package com.semenenko.pillreminder.data
 
 import android.content.Context
 import com.semenenko.pillreminder.notify.Notifier
+import com.semenenko.pillreminder.notify.Reminders
 
 /** Отметка приёма: используется и экранами, и кнопками в уведомлениях. */
 object Intake {
@@ -57,6 +58,7 @@ object Intake {
             }
         }
         Notifier.cancelDose(ctx, medId, at)
+        if (status != IntakeStatus.MISSED) Reminders.cancelRepeat(ctx, medId, at)
     }
 
     /** Изменить количество у уже принятой дозы; остаток пересчитывается на разницу. */
@@ -79,6 +81,7 @@ object Intake {
         db.logs().delete(log)
         if (log.status == IntakeStatus.TAKEN) db.meds().incrementStock(log.medicationId, log.doseQuarters)
         Notifier.cancelDose(ctx, log.medicationId, log.scheduledAt)
+        Reminders.cancelRepeat(ctx, log.medicationId, log.scheduledAt)
         // Отметку отменили, а время приёма сегодня уже прошло — напоминаем снова
         val scheduled = millisToLdt(log.scheduledAt)
         if (scheduled.toLocalDate() == java.time.LocalDate.now() && !scheduled.isAfter(java.time.LocalDateTime.now())) {

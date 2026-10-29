@@ -97,6 +97,8 @@ object Notifier {
             b.setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(pub)
         }
         NotificationManagerCompat.from(ctx).notify(id, b.build())
+        // Напоминание вернётся через интервал, пока приём не отмечен (смахнули, открыли или проигнорировали)
+        Reminders.scheduleRepeat(ctx, med.id, at)
     }
 
     fun cancelDose(ctx: Context, medId: Long, at: Long) {
